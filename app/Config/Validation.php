@@ -41,4 +41,57 @@ class Validation extends BaseConfig
     // --------------------------------------------------------------------
     // Rules
     // --------------------------------------------------------------------
+
+    /**
+     * Conjunto de reglas para el alta de un nuevo libro
+     */
+    public array $newBook=([
+        'nombre_libro' => [
+            'rules' => 'required|is_unique[libro.titulo]',
+            'errors' => [
+                'required' => 'El nombre es obligatorio.',
+                'is_unique' => 'Ya existe un libro con ese titullo.'
+            ]
+        ],
+        'precio_libro' => [
+            'rules' => 'required|greater_than[0]',
+            'errors' => [
+                'required' => 'El precio es obligatorio.',
+                'greater_than' => 'El precio debe ser mayor a cero.'
+            ]
+        ],
+        'autor_libro' => [
+            'rules' => 'required',
+            'errors' => [
+                'required' => 'Debe seleccionar un autor.'
+            ]
+        ],
+        'editorial_libro' => [
+            'rules' => 'required',
+            'errors' => [
+                'required' => 'Debe seleccionar una editorial.'
+            ]
+        ],
+        'sinopsis_libro' => [
+            'rules' => 'required',
+            'errors' => [
+                'required' => 'Debe agregar una sinopsis.',
+        
+            ]
+        ],
+        'paginas_libro' => [
+            'rules' => 'required|greater_than[0]|less_than_equal_to[1000]',
+            'errors' => [
+                'required' => 'Debe agregar la cantidad de páginas.',
+                'greater_than' => 'Las páginas no pueden ser 0 o menor.',
+                'less_than_equal_to' => 'La cantidad de páginas debe ser menor que 1001.'
+            ]
+        ],
+        'fecha_libro' => [
+                'rules' => 'required',
+                'errors' => [
+                    'required' => 'Por favor, seleccione una fecha para la publicación del libro.'
+                ]
+            ]
+    ]);
 }

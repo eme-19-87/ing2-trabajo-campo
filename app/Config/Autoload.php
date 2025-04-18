@@ -96,11 +96,11 @@ class Autoload extends AutoloadConfig
      *
      * @var list<string>
      */
-    public $helpers = ['session'];
+    public $helpers = ['session','url'];
 
         
      
         // OTHER PSR4 ENTRIES
  
-   // public $autoload=['session'];
+    public $autoload=['form_validation'];
 }

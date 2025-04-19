@@ -9,8 +9,13 @@
         <li class="nav-item">
           <a class="nav-link active text-light" aria-current="page"  href=<?php echo base_url('/');?>>Home</a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link text-light" href=<?php echo base_url('products');?>>Productos</a>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle bg-dark text-light" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          Productos
+          </a>
+          <ul class="dropdown-menu">
+          <a class="nav-link text-dark" href=<?php echo base_url('products');?>>Nuevo</a>
+          </ul>
         </li>
        
         

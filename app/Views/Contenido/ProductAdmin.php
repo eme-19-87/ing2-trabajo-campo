@@ -18,6 +18,7 @@
 <?php endif; ?>
 
 <div class="container w-75">
+  <h1 class="bg-dark text-light text-center mt-5 rounded p-3">Registrar Nuevo Libro</h1>
   <form class="m-3" action="<?php echo base_url('create_book') ?>" method="post">
     <!-- Nombre -->
     <div class="mb-3">
@@ -127,6 +128,6 @@
                 </div>
 
  
-    <button type="submit" class="btn btn-primary">Submit</button>
+    <button type="submit" class="btn btn-primary">Registrar</button>
   </form>
 </div>

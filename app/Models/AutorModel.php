@@ -8,11 +8,14 @@ class AutorModel extends Model
 {
     protected $table = 'autor';
 
-    // Método para llamar al procedimiento
-    public function obtenerAutores()
+    /**
+     * Permite obtener los datos de los autores almacenados en la base de datos
+     * @return ObjectArray retorna un arreglo de objetos con los datos de todos los autores almacenados en la base de datos
+     */
+    public function getAutores()
     {
         $db = \Config\Database::connect();
-        $query = $db->query("CALL digibook.ObtenerAutores()");
+        $query = $db->query("CALL digibook2.getAutores()");
         return $query->getResult(); // devuelve array de objetos
     }
 }

@@ -1,8 +1,30 @@
+
+<!--Muestra una ventana emergente si el libro fue insertado correctamente-->
+<?php if (session()->getFlashdata('correct_insert')): ?>
+    <script>
+        window.onload = function () {
+            alert("<?= session()->getFlashdata('correct_insert') ?>");
+        };
+    </script>
+<?php endif; ?>
+
+<!--Muestra una ventana emergente si hubo errores al insertar el libro-->
+<?php if (session()->getFlashdata('error_insert')): ?>
+    <script>
+        window.onload = function () {
+            alert("<?= session()->getFlashdata('error_insert') ?>");
+        };
+    </script>
+<?php endif; ?>
+
 <div class="container w-75">
   <form class="m-3" action="<?php echo base_url('create_book') ?>" method="post">
     <!-- Nombre -->
     <div class="mb-3">
       <label for="nombre_libro" class="form-label">Nombre del libro</label>
+      <!--old permite mantener el viejo valor que tenía el input cuando se redirige la vista-->
+      <!--session(errors) permite saber si existen errores para las validaciones.
+      Con session(errors.valor_name) veo qué input según su atributo name tuvo el error-->
       <input type="text" name="nombre_libro" id="nombre_libro" value="<?= old('nombre_libro') ?>"
         class="form-control <?= session('errors.nombre_libro') ? 'is-invalid' : '' ?>">
       <?php if (session('errors.nombre_libro')): ?>

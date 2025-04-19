@@ -3,39 +3,54 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
+use PhpParser\Node\Stmt\TryCatch;
 
 class LibroModel extends Model
 {
-    public function create_book($data): bool
-    {
-        $db = \Config\Database::connect();
+    /**
+     * Permite crear un nuevo libro en la base de datos mediante un procedimiento almacenado en ésta.
+     * @param Array $data un arreglo con el título, precio, editorial, sinopsis, páginas, autor y género del libro
+     * @return Array retorna un arreglo que contiene el resultado de la operación que será 1 en caso de éxito y 0 en caso de error, y un mensaje de error en caso de existir
+     */
+    public function crearLibro($data): Array
+{
+    $db = \Config\Database::connect();
+     // Asignar fecha o null
+     $fecha = !empty($data['fecha_publicacion']) 
+     ? date('Y-m-d', strtotime($data['fecha_publicacion'])) 
+     : null;
 
-	//En este punto prepara la función, pero aún no la ejecuta
-	//la forma de crear esta consulta es útil para evitar las inyecciones
-        $builder = $db->prepare(static function ($db) {
-            return $db->query("CALL createNewBook(?, ?, ?, ?, ?, ?, ?, ?, @resultado)");
-        });
-        //dd($data);
-        
+    //creo el conjunto de datos que voy a almacenar
+    $data_to_insert=[
+        $data['titulo'],
+        $data['precio'],
+        $data['editorial_id'],
+        $data['sinopsis'],
+        $data['paginas'],
+        $data['autor_id'],
+        $data['genero_id'],
+        $fecha
+    ];
+    //la sentencia sql que llama al procedimiento en mysql
+    $sql = "CALL crearNuevoLibro(?, ?, ?, ?, ?, ?, ?, ?, @resultado, @msj_error)";
+    
+    try {
+        // Ejecutar el procedimiento con los parámetros
+        $db->query($sql, $data_to_insert);
 
-        // Ejecutar el procedimiento
-        $builder->execute([
-            $data['titulo'],
-            $data['precio'],
-            $data['editorial_id'],
-            $data['sinopsis'],
-            $data['paginas'],
-            $data['autor_id'],
-            $data['genero_id'],
-            date($data['fecha_publicacion'])
-        ]);
-
-        // Consultar el resultado devuelto
-	//Recordar que la función en MySQL retorna 1 en caso de ser todo correcto
-	//y 0 en caso de que haya existido algún error.
-        $query = $db->query("SELECT @resultado AS resultado");
+        // Obtener el valor de salida
+        $query = $db->query("SELECT @resultado as resultado,@msj_error as msj_error");
         $row = $query->getRow();
-
-        return ($row && $row->resultado == 1);
+        //retorno un arreglo con el mensaje de error, en caso que haya
+        //y retorno también el resultado que será 0 en caso de error y 1 en caso contrario
+        return ['mjs_error'=>$row->msj_error,'resultado'=>$row->resultado];
+    } catch (\Throwable $e) {
+        //retorno el error según la excepción acontecida.
+        return Array('resultado'=>0,"msj_error"=>$e->getMessage());
     }
+
+
+
+}
+
 }

@@ -23,13 +23,17 @@ class ProductController extends BaseController{
     }
     public function show_product_form(){
        
-     
+        //creo los modelos para recuperar la información de generos, autores y editoriales
         $generoModel = new GeneroModel(); 
         $autorModel=new AutorModel();
         $editorialModel=new EditorialModel();
-        $generos = $generoModel->obtenerGeneros();
-        $autores=$autorModel->obtenerAutores();
-        $editoriales=$editorialModel->obtenerEditoriales();
+
+        //llamo a los métodos pertinentes para obtener los datos
+        $generos = $generoModel->getGeneros();
+        $autores=$autorModel->getAutores();
+        $editoriales=$editorialModel->getEditoriales();
+
+        //cargo la vista
         return view('plantillas/head') .
         view('plantillas/navbar') .
         view('contenido/ProductAdmin',['generos' => $generos,'editoriales'=>$editoriales,'autores'=>$autores]) .
@@ -38,34 +42,45 @@ class ProductController extends BaseController{
 
     public function create_book()
     {
+        //el helper ayuda al control de errores.
         helper(['form']);
 
-        // Validaciones (asumimos que están hechas aparte)
+        // creo el objeto para la validación del formulario
         $validation = \Config\Services::validation();
-        $validation->setRuleGroup('newBook'); // Validación separada
+        //la validación se encuentra en app->Config->Validation.php
+        $validation->setRuleGroup('newBook'); 
 
+        //compruebo si se cumplen las reglas establecidas en el conjunto de reglas newBook
         if (!$validation->withRequest($this->request)->run()) {
-            //dd($validation->getErrors());
+            ///si no se cumplen, redirijo a la vista del formulario con los msjs de error
             return redirect()->back()->withInput()->with('errors', $validation->getErrors());
         }
 
+        //creo el conjunto de datos que voy a pasar al modelo para realizar la consulta
+        //con $this->request->getPost obtengo los datos de los inpunt según su valor
+        //en el atributo name
         $datos = [
             'titulo' => $this->request->getPost('nombre_libro'),
-            'precio' => $this->request->getPost('precio_libro'),
-            'editorial_id' => $this->request->getPost('editorial_libro'),
+            'precio' => floatval($this->request->getPost('precio_libro')),
+            'editorial_id' => intval($this->request->getPost('editorial_libro')),
             'sinopsis' => $this->request->getPost('sinopsis_libro'),
-            'paginas' => $this->request->getPost('paginas_libro'),
-            'autor_id' => $this->request->getPost('autor_libro'),
-            'genero_id' => $this->request->getPost('genero_libro'),
-            'fecha_publicacion' => $this->request->getPost('fecha_libro'),
+            'paginas' => intval($this->request->getPost('paginas_libro')),
+            'autor_id' => intval($this->request->getPost('autor_libro')),
+            'genero_id' => intval($this->request->getPost('genero_libro')),
+            'fecha_publicacion' =>date('Y-m-d', strtotime( $this->request->getPost('fecha_libro'))) 
         ];
-
+        //creo una instancia del modelo LibroModel
         $libroModel = new LibroModel();
-        $resultado=$libroModel->create_book($datos);
-        if ($resultado){
-            return "Libro ingresado con éxito";
+        //llamo al método para crear el nuevo libro
+        $resultado=$libroModel->crearLibro($datos);
+
+        //este tiene dos campos: el resultado que será 0 si hay error, 1 en caso contrario
+        //si no hubo error, retorno a la vista del formulario para cargar un nuevo libro
+        if ($resultado['resultado']){
+            return redirect()->to(base_url('products'))->with('correct_insert',"Libro insertado correctamente");
         }else{
-            return "Error al ingresar el libro";
+            //si el resultado fue 0, mando el mensaje de error a la vista
+            return redirect()->to(base_url('products'))->with('error_insert', $resultado['msj_error']);
         }
        
         //return redirect()->to('/libros')->with('mensaje', 'Libro cargado correctamente.');

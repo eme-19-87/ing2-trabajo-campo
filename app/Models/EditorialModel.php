@@ -8,11 +8,14 @@ class EditorialModel extends Model
 {
     protected $table = 'editorial';
 
-    // Método para llamar al procedimiento
-    public function obtenerEditoriales()
+     /**
+     * Permite obtener la información de las editoriales almacenadas en la base de datos
+     * @return ObjectArray retorna un arreglo de objetos con los datos de todas las editoriales almacenados en la base de datos
+     */
+    public function getEditoriales()
     {
         $db = \Config\Database::connect();
-        $query = $db->query("CALL digibook.ObtenerEditorial()");
+        $query = $db->query("CALL digibook2.getEditoriales()");
         return $query->getResult(); // devuelve array de objetos
     }
 }

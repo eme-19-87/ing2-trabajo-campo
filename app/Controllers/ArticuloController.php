@@ -9,9 +9,9 @@ use App\Models\Products;
 use App\Models\GeneroModel;
 use App\Models\AutorModel;
 use App\Models\EditorialModel;
-use App\Models\LibroModel;
+use App\Models\ArticuloModel;
 
-class ProductController extends BaseController{
+class ArticuloController extends BaseController{
     /**
      * Constructor de la clase ProductController
      */
@@ -36,11 +36,11 @@ class ProductController extends BaseController{
         //cargo la vista
         return view('plantillas/head') .
         view('plantillas/navbar') .
-        view('contenido/ProductAdmin',['generos' => $generos,'editoriales'=>$editoriales,'autores'=>$autores]) .
+        view('contenido/VistaAgregarArticulo',['generos' => $generos,'editoriales'=>$editoriales,'autores'=>$autores]) .
         view('plantillas/footer');
     }
 
-    public function create_book()
+    public function validar_datos()
     {
         //el helper ayuda al control de errores.
         helper(['form']);
@@ -54,7 +54,7 @@ class ProductController extends BaseController{
         if (!$validation->withRequest($this->request)->run()) {
             ///si no se cumplen, redirijo a la vista del formulario con los msjs de error
             return redirect()->back()->withInput()->with('errors', $validation->getErrors());
-        }
+        } 
 
         //creo el conjunto de datos que voy a pasar al modelo para realizar la consulta
         //con $this->request->getPost obtengo los datos de los inpunt según su valor
@@ -70,17 +70,17 @@ class ProductController extends BaseController{
             'fecha_publicacion' =>date('Y-m-d', strtotime( $this->request->getPost('fecha_libro'))) 
         ];
         //creo una instancia del modelo LibroModel
-        $libroModel = new LibroModel();
+        $libroModel = new ArticuloModel();
         //llamo al método para crear el nuevo libro
-        $resultado=$libroModel->crearLibro($datos);
-
+        $resultado=$libroModel->insertar_articulo($datos);
+       
         //este tiene dos campos: el resultado que será 0 si hay error, 1 en caso contrario
         //si no hubo error, retorno a la vista del formulario para cargar un nuevo libro
         if ($resultado['resultado']){
             return redirect()->to(base_url('products'))->with('correct_insert',"Libro insertado correctamente");
         }else{
             //si el resultado fue 0, mando el mensaje de error a la vista
-            return redirect()->to(base_url('products'))->with('error_insert', $resultado['msj_error']);
+            return redirect()->to(base_url('products'))->withInput()->with('error_insert', $resultado['msj_error']);
         }
        
         //return redirect()->to('/libros')->with('mensaje', 'Libro cargado correctamente.');

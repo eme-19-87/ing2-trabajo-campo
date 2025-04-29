@@ -17,7 +17,7 @@ Este es un proyecto en desarrollo como parte del curso de Ingeniería de Softwar
 
 Somos un equipo de 5 integrantes trabajando en colaboración:
 
-- Integrante 1  
+- Castillo, Claudio M. F.
 - Integrante 2  
 - Integrante 3  
 - Integrante 4  

@@ -7,7 +7,7 @@ use CodeIgniter\Router\RouteCollection;
  */
 $routes->get('/', 'Home::index',['as'=>'index']);
 $routes->get('products', 'ArticuloController::show_product_form');
-$routes->post('create_book', 'ArticuloController::validar_datos');
+$routes->post('create_book', 'ArticuloController::validarDatos');
 
 
 

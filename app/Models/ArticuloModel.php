@@ -12,7 +12,7 @@ class ArticuloModel extends Model
      * @param Array $data un arreglo con el título, precio, editorial, sinopsis, páginas, autor y género del libro
      * @return Array retorna un arreglo que contiene el resultado de la operación que será 1 en caso de éxito y 0 en caso de error, y un mensaje de error en caso de existir
      */
-    public function insertar_articulo($data): Array
+    public function insertaArticulo($data): Array
 {
     $db = \Config\Database::connect();
      // Asignar fecha o null

@@ -40,7 +40,7 @@ class ArticuloController extends BaseController{
         view('plantillas/footer');
     }
 
-    public function validar_datos()
+    public function validarDatos()
     {
         //el helper ayuda al control de errores.
         helper(['form']);
@@ -72,7 +72,7 @@ class ArticuloController extends BaseController{
         //creo una instancia del modelo LibroModel
         $libroModel = new ArticuloModel();
         //llamo al método para crear el nuevo libro
-        $resultado=$libroModel->insertar_articulo($datos);
+        $resultado=$libroModel->insertaArticulo($datos);
        
         //este tiene dos campos: el resultado que será 0 si hay error, 1 en caso contrario
         //si no hubo error, retorno a la vista del formulario para cargar un nuevo libro

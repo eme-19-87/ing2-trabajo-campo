@@ -35,9 +35,12 @@ Somos un equipo de 5 integrantes trabajando en colaboración:
 
 ## 📁 Estructura del repositorio
 
-/app Código fuente del backend con CodeIgniter 
-/public Archivos públicos (Bootstrap, imágenes, index.php) 
+/app Código fuente del backend con CodeIgniter
+
+/public Archivos públicos (Bootstrap, imágenes, index.php)
+
 /database Scripts de base de datos
+
 README.md Este archivo
 
 

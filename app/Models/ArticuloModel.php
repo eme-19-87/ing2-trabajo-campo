@@ -5,14 +5,14 @@ namespace App\Models;
 use CodeIgniter\Model;
 use PhpParser\Node\Stmt\TryCatch;
 
-class LibroModel extends Model
+class ArticuloModel extends Model
 {
     /**
      * Permite crear un nuevo libro en la base de datos mediante un procedimiento almacenado en ésta.
      * @param Array $data un arreglo con el título, precio, editorial, sinopsis, páginas, autor y género del libro
      * @return Array retorna un arreglo que contiene el resultado de la operación que será 1 en caso de éxito y 0 en caso de error, y un mensaje de error en caso de existir
      */
-    public function crearLibro($data): Array
+    public function insertaArticulo($data): Array
 {
     $db = \Config\Database::connect();
      // Asignar fecha o null
@@ -43,7 +43,7 @@ class LibroModel extends Model
         $row = $query->getRow();
         //retorno un arreglo con el mensaje de error, en caso que haya
         //y retorno también el resultado que será 0 en caso de error y 1 en caso contrario
-        return ['mjs_error'=>$row->msj_error,'resultado'=>$row->resultado];
+        return ['msj_error'=>$row->msj_error,'resultado'=>$row->resultado];
     } catch (\Throwable $e) {
         //retorno el error según la excepción acontecida.
         return Array('resultado'=>0,"msj_error"=>$e->getMessage());

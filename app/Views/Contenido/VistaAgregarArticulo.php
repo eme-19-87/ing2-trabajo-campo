@@ -22,7 +22,7 @@
   <form class="m-3" action="<?php echo base_url('create_book') ?>" method="post">
     <!-- Nombre -->
     <div class="mb-3">
-      <label for="nombre_libro" class="form-label">Nombre del libro</label>
+      <label for="nombre_libro" class="form-label">Título</label>
       <!--old permite mantener el viejo valor que tenía el input cuando se redirige la vista-->
       <!--session(errors) permite saber si existen errores para las validaciones.
       Con session(errors.valor_name) veo qué input según su atributo name tuvo el error-->
@@ -128,6 +128,6 @@
                 </div>
 
  
-    <button type="submit" class="btn btn-primary">Registrar</button>
+    <button type="submit" class="btn btn-primary">Cargar</button>
   </form>
 </div>

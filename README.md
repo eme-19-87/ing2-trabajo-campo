@@ -1,6 +1,6 @@
 # DigiBook 📚
 
-**DigiBook** es una plataforma web para la venta de libros digitales. Nuestro objetivo es ofrecer una experiencia sencilla y eficiente para que los usuarios puedan buscar y comprar leer libros electrónicos desde cualquier lugar.
+**DigiBook** es una plataforma web para la venta de libros digitales. Nuestro objetivo es ofrecer una experiencia sencilla y eficiente para que los usuarios puedan buscar y comprar libros electrónicos desde cualquier lugar.
 
 ## 🚀 Estado del proyecto
 

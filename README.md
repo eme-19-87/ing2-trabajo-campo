@@ -23,7 +23,6 @@ Somos un equipo de 5 integrantes trabajando en colaboración:
 - Olivos Battestin, Santiago Nicolás 
 - Ortiz, Julio Sebastian
 
-*(Puedes reemplazar estos nombres por los reales más adelante.)*
 
 ## 📌 Funcionalidades previstas
 

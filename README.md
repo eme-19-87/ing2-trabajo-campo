@@ -17,11 +17,11 @@ Este es un proyecto en desarrollo como parte del curso de la materia Ingeniería
 
 Somos un equipo de 5 integrantes trabajando en colaboración:
 
-- Castillo, Claudio M. F.
-- Integrante 2  
-- Integrante 3  
-- Integrante 4  
-- Integrante 5  
+- Castillo, Claudio Marcelo Fabian 
+- Espinoza, Enrique Manuel 
+- Miguel, Isabel de los Angeles 
+- Olivos Battestin, Santiago Nicolás 
+- Ortiz, Julio Sebastian
 
 *(Puedes reemplazar estos nombres por los reales más adelante.)*
 

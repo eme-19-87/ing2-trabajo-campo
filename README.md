@@ -1,10 +1,10 @@
 # DigiBook 📚
 
-**DigiBook** es una plataforma web para la venta de libros digitales. Nuestro objetivo es ofrecer una experiencia sencilla y eficiente para que los usuarios puedan explorar, comprar y leer libros electrónicos desde cualquier lugar.
+**DigiBook** es una plataforma web para la venta de libros digitales. Nuestro objetivo es ofrecer una experiencia sencilla y eficiente para que los usuarios puedan buscar y comprar leer libros electrónicos desde cualquier lugar.
 
 ## 🚀 Estado del proyecto
 
-Este es un proyecto en desarrollo como parte del curso de Ingeniería de Software II. Estamos trabajando en las funcionalidades básicas del sistema.
+Este es un proyecto en desarrollo como parte del curso de la materia Ingeniería de Software II de la carrera Lic. en Sistemas de Información de la UNNE. En esta etapa, nos encontramos trabajando en las funcionalidades básicas del sistema.
 
 ## 🛠️ Tecnologías utilizadas
 

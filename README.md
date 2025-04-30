@@ -23,7 +23,6 @@ Somos un equipo de 5 integrantes trabajando en colaboración:
 - Olivos Battestin, Santiago Nicolás 
 - Ortiz, Julio Sebastian
 
-
 ## 📌 Funcionalidades previstas
 
 - Registro e inicio de sesión de usuarios  

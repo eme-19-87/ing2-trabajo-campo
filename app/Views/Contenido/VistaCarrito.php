@@ -1,5 +1,5 @@
-<?php if (is_null($cart)){;?>
-    <p class="display-1 p-5 bg-danger">
+<?php if (count($cart)<=0){;?>
+    <p class="display-1 p-5 bg-danger m-5">
         Aún no ha agregado productos al carrito.
     </p>
 <?php }else {;?>

@@ -8,6 +8,7 @@ use CodeIgniter\Router\RouteCollection;
 $routes->get('/', 'Home::index',['as'=>'index']);
 $routes->get('products', 'ArticuloController::show_product_form');
 $routes->post('create_book', 'ArticuloController::validarDatos');
+$routes->get('cart', 'CartController::show_cart');
 
 
 

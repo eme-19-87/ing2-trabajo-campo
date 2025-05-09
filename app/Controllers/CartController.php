@@ -26,6 +26,10 @@ class CartController extends BaseController{
 
     public function show_cart(){
         $cart_data=$this->get_cart();
+        return view('plantillas/head') .
+        view('plantillas/navbar') .
+        view('contenido/VistaCarrito',['cart' => $cart_data]) .
+        view('plantillas/footer');
         
     }
 
@@ -40,7 +44,7 @@ class CartController extends BaseController{
     /**
      * Permite agregar un nuevo producto al carrito
      */
-    public function add_item_to_cart(){
+    public function add_item_to_cart($id_prod){
         //el helper ayuda al control de errores.
         //helper(['form']);
 
@@ -54,7 +58,6 @@ class CartController extends BaseController{
             ///si no se cumplen, redirijo a la vista del formulario con los msjs de error
             //return redirect()->back()->withInput()->with('errors', $validation->getErrors());
         //} 
-        $id_prod=$this->request->getPost('id_articulo');
         $productoExiste = false;
 
         //controla que el producto ya no esté en el carrito
@@ -68,16 +71,21 @@ class CartController extends BaseController{
             return redirect()->back()->withInput()->with('cart_errors', 'El producto ya está en el carrito');
         }
         else{
-            $this->cart->insert([
-                'id'      => $this->request->getPost('id_articulo'),
+            $articuloModel=New ArticuloModel();
+            $articulo=$articuloModel->get_by_id($id_prod);
+            if (count($articulo)>=0){
+                 $this->cart->insert([
+                'id'      => $id_prod,
                 'qty'     => 1,
-                'price'   => $this->request->getPost('precio'),
-                'name'    => $this->request->getPost('nombre'),
-                'genre'=>$this->request->getPost('id_articulo'),
-                'editorial'=>$this->request->getPost('nombre_editorial'),
-                'author'=>$this->request->getPost('nombre_author')
-            ]);
-            $this->show_cart();
+                'price'   => $articulo->precio,
+                'name'    => $articulo->nombre,
+                'genre'=>$articulo->genero,
+                'editorial'=>$articulo->editorial,
+                'author'=>$articulo->autor
+                ]);
+                $this->show_cart();
+            }
+           
         }
             
     }

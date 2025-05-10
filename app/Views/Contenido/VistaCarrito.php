@@ -4,34 +4,39 @@
     </p>
 <?php }else {;?>
 
-<table class="table">
-  <thead>
-    <tr>
-      <th scope="col">#</th>
-      <th scope="col">First</th>
-      <th scope="col">Last</th>
-      <th scope="col">Handle</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th scope="row">1</th>
-      <td>Mark</td>
-      <td>Otto</td>
-      <td>@mdo</td>
-    </tr>
-    <tr>
-      <th scope="row">2</th>
-      <td>Jacob</td>
-      <td>Thornton</td>
-      <td>@fat</td>
-    </tr>
-    <tr>
-      <th scope="row">3</th>
-      <td>John</td>
-      <td>Doe</td>
-      <td>@social</td>
-    </tr>
-  </tbody>
-</table>
+ <table class="table table-striped table-hover text-center mt-3">
+                <thead class="table-dark ">
+                    <tr>
+                        <th>Título</th>
+                        <th>Precio</th>
+                        <th>Autor</th>
+                        <th>Editorial</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($cart as $id => $item): ?>
+                        <tr>
+                            <td><?= esc($item['name']) ?></td>
+                            <td>$<?= number_format($item['price'], 2) ?></td>
+                           <td><?= $item['author'] ?></td>
+                           <td><?= $item['editorial'] ?></td>
+                            <td>
+                                <a href="<?= base_url('cart/remove/' . $item['rowid']) ?>" class="btn btn-sm btn-danger">Eliminar</a>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+                <tfoot>
+                   
+                  
+                </tfoot>
+            </table>
+            
+            <div class="d-flex justify-content-between">
+                <a href="<?= base_url('tienda') ?>" class="btn btn-secondary">Seguir Comprando</a>
+                <a href="<?= base_url('checkout') ?>" class="btn btn-success">Pagar Ahora</a>
+            </div>
 <?php }?>
+
+

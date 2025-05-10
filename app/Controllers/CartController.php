@@ -44,7 +44,7 @@ class CartController extends BaseController{
     /**
      * Permite agregar un nuevo producto al carrito
      */
-    public function add_item_to_cart($id_prod){
+    public function addItemToCart($id_prod){
         //el helper ayuda al control de errores.
         //helper(['form']);
 
@@ -59,7 +59,6 @@ class CartController extends BaseController{
             //return redirect()->back()->withInput()->with('errors', $validation->getErrors());
         //} 
         $productoExiste = false;
-
         //controla que el producto ya no esté en el carrito
         foreach ($this->get_cart() as $item) {
             if ($item['id'] === $id_prod) {
@@ -72,18 +71,20 @@ class CartController extends BaseController{
         }
         else{
             $articuloModel=New ArticuloModel();
-            $articulo=$articuloModel->get_by_id($id_prod);
+            $articulo=$articuloModel->getArticuloPorId(intval($id_prod));
+            //dd($articulo['resultado'][0]['id']);
             if (count($articulo)>=0){
                  $this->cart->insert([
                 'id'      => $id_prod,
                 'qty'     => 1,
-                'price'   => $articulo->precio,
-                'name'    => $articulo->nombre,
-                'genre'=>$articulo->genero,
-                'editorial'=>$articulo->editorial,
-                'author'=>$articulo->autor
-                ]);
-                $this->show_cart();
+                'price'   => $articulo['resultado'][0]['Precio'],
+                'name'    => $articulo['resultado'][0]['Título'],
+                'genre'=>$articulo['resultado'][0]['Género'],
+                'editorial'=>$articulo['resultado'][0]['Editorial'],
+                'author'=>$articulo['resultado'][0]['Autores'],
+                
+                 ]);
+                return redirect()->to(base_url('cart'));
             }
            
         }

@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Controllers;
+
+use App\Models\ArticuloModel;
 use App\Models\Roles;
 use ci4shoppingcart\Libraries\Cart;
 //https://github.com/bertugfahriozer/ci4shoppingcart carrito
@@ -25,11 +27,12 @@ class Home extends BaseController
              ));
 
              dd($cart);*/
-
+            $prodModel=new ArticuloModel();
+            $productos=$prodModel->getArticulos();
             $data['titulo'] = 'index';
             echo view('plantillas/head');
             echo view('plantillas/navbar');
-            echo view('Contenido/index');
+            echo view('Contenido/index',['productos'=>$productos['resultado']]);
             echo view('plantillas/footer');
         
         }

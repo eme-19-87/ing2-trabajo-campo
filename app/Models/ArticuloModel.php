@@ -53,4 +53,47 @@ class ArticuloModel extends Model
 
 }
 
+public function getArticulos(){
+    $db = \Config\Database::connect();
+     //la sentencia sql que llama al procedimiento en mysql
+    $sql = "CALL obtenerLibros()";
+    
+    try {
+        // Ejecutar el procedimiento con los parámetros
+        $query = $this->db->query("CALL obtenerLibros()");
+        
+
+        //retorno un arreglo con el mensaje de error, en caso que haya
+        //y retorno también el resultado que será 0 en caso de error y 1 en caso contrario
+        return ['resultado'=>$query->getResultArray(),"msj_error"=>"Sin errores" ];
+    } catch (\Throwable $e) {
+        //retorno el error según la excepción acontecida.
+        return Array('resultado'=>0,"msj_error"=>$e->getMessage());
+    }
+
+}
+
+public function getArticuloPorId($idArticulo){
+    $db = \Config\Database::connect();
+     //la sentencia sql que llama al procedimiento en mysql
+    $sql = "CALL obtenerLibroPorId(?)";
+    
+    
+    try {
+        // Ejecutar el procedimiento con los parámetros
+        $query=$db->query($sql, $idArticulo);
+
+        $row = $query->getRow();
+        
+
+        //retorno un arreglo con el mensaje de error, en caso que haya
+        //y retorno también el resultado que será 0 en caso de error y 1 en caso contrario
+        return ['resultado'=>$query->getResultArray(),"msj_error"=>"Sin errores" ];
+    } catch (\Throwable $e) {
+        //retorno el error según la excepción acontecida.
+        return Array('resultado'=>0,"msj_error"=>$e->getMessage());
+    }
+
+}
+
 }

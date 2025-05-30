@@ -129,4 +129,26 @@ class CartController extends BaseController{
         
     }
 
+    /**
+     * Método que permite la eliminación total del carrito
+     */
+    public function vaciarCarrito()
+    {
+        try {
+            $this->cart->destroy();
+            return $this->response->setJSON([
+                    'success' => true,
+                    'message' => 'Carrito eliminado.'
+                ]);
+        } catch (\Throwable $th) {
+              return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'Error al eliminar el carrito.'
+                ]);
+        }
+        
+
+       
+    }
+
 }

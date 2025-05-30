@@ -34,7 +34,7 @@
             </table>
             
             <div class="d-flex justify-content-between mx-2">
-                <a href="<?= base_url('tienda') ?>" class="btn btn-danger">Eliminar Carrito</a>
+                <a  class="btn btn-danger btn-eliminar-carrito">Eliminar Carrito</a>
                 <a href="<?= base_url('/') ?>" class="btn btn-secondary">Seguir Comprando</a>
                 <a href="<?= base_url('checkout') ?>" class="btn btn-success">Pagar Ahora</a>
             </div>

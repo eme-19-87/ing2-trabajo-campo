@@ -23,7 +23,7 @@
                             </div>
                             <div class="card-footer text-body-secondary">
                                 <form action="<?= base_url('cart/add/' . $libro['id']) ?>" method="post">
-                                    <button type="submit">Ver detalles</button>
+                                    <button type="submit">Agregar</button>
                                 </form>
                             </div>
                         </div>

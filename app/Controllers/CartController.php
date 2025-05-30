@@ -11,6 +11,7 @@ use App\Models\AutorModel;
 use App\Models\EditorialModel;
 use App\Models\ArticuloModel;
 use ci4shoppingcart\Libraries\Cart;
+use PhpParser\Node\Stmt\TryCatch;
 
 class CartController extends BaseController{
     private $cart;
@@ -24,8 +25,8 @@ class CartController extends BaseController{
         $this->cart=new Cart();  
     }
 
-    public function show_cart(){
-        $cart_data=$this->get_cart();
+    public function showCart(){
+        $cart_data=$this->getCart();
         return view('plantillas/head') .
         view('plantillas/navbar') .
         view('contenido/VistaCarrito',['cart' => $cart_data]) .
@@ -36,32 +37,40 @@ class CartController extends BaseController{
     /**
      * Permite obtener los datos guardados en el carrito
      */
-    private function get_cart(){
+    private function getCart(){
         return $this->cart->contents();
     }
 
+    private function buscarArticulo($idProd){
+        try {
+            $articuloModel=New ArticuloModel();
+            $articulo=$articuloModel->getArticuloPorId(intval($idProd));
+            return $articulo;
+        } catch (\Throwable $th) {
+            throw $th;
+        }
+        
+    }
+    /**
+     * 
+     */
+    private function agregarCarrito($datosArticulo){
+        try {
+            $this->cart->insert($datosArticulo);
+        } catch (\Throwable $th) {
+            return redirect()->back()->withInput()->with('cart_errors', 'Error al agregar el producto al artículo');
+        }
+    }
 
     /**
      * Permite agregar un nuevo producto al carrito
      */
-    public function addItemToCart($id_prod){
-        //el helper ayuda al control de errores.
-        //helper(['form']);
-
-        // creo el objeto para la validación del formulario
-        //$validation = \Config\Services::validation();
-        //la validación se encuentra en app->Config->Validation.php
-        //$validation->setRuleGroup('newBook'); 
-
-        //compruebo si se cumplen las reglas establecidas en el conjunto de reglas newBook
-        //if (!$validation->withRequest($this->request)->run()) {
-            ///si no se cumplen, redirijo a la vista del formulario con los msjs de error
-            //return redirect()->back()->withInput()->with('errors', $validation->getErrors());
-        //} 
+    public function controlAgregar($idProd){
+        
         $productoExiste = false;
         //controla que el producto ya no esté en el carrito
-        foreach ($this->get_cart() as $item) {
-            if ($item['id'] === $id_prod) {
+        foreach ($this->getCart() as $item) {
+            if ($item['id'] === $idProd) {
                 $productoExiste = true;
                 break;
             }
@@ -70,24 +79,54 @@ class CartController extends BaseController{
             return redirect()->back()->withInput()->with('cart_errors', 'El producto ya está en el carrito');
         }
         else{
-            $articuloModel=New ArticuloModel();
-            $articulo=$articuloModel->getArticuloPorId(intval($id_prod));
+            $articulo=$this->buscarArticulo($idProd);
             //dd($articulo['resultado'][0]['id']);
             if (count($articulo)>=0){
-                 $this->cart->insert([
-                'id'      => $id_prod,
-                'qty'     => 1,
-                'price'   => $articulo['resultado'][0]['Precio'],
-                'name'    => $articulo['resultado'][0]['Título'],
-                'genre'=>$articulo['resultado'][0]['Género'],
-                'editorial'=>$articulo['resultado'][0]['Editorial'],
-                'author'=>$articulo['resultado'][0]['Autores'],
-                
-                 ]);
+                $datosArticulo=['id'      => $idProd,
+                    'qty'     => 1,
+                    'price'   => $articulo['resultado'][0]['Precio'],
+                    'name'    => $articulo['resultado'][0]['Título'],
+                    'genre'=>$articulo['resultado'][0]['Género'],
+                    'editorial'=>$articulo['resultado'][0]['Editorial'],
+                    'author'=>$articulo['resultado'][0]['Autores'],
+                    
+                ];
+                 $this->agregarCarrito($datosArticulo);
+                 
                 return redirect()->to(base_url('cart'));
             }
            
         }
             
     }
+
+    /**
+     * Permite eliminar un elemento del carrito según su id
+     */
+    public function eliminarArticulo($idProd){
+        
+        $encontrado = false;
+         foreach ($this->getCart() as $rowid => $item) {
+            if ($item['id'] == $idProd) {
+                $this->cart->remove($rowid);
+                $encontrado=true;
+                break;
+            }
+        }
+         if ($this->request->isAJAX()) {
+            if ($encontrado) {
+                  return $this->response->setJSON([
+                    'success' => true,
+                    'message' => 'Producto eliminado del carrito.'
+                ]);
+            } else {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'Producto no encontrado en el carrito.'
+                ]);
+            }
+        }
+        
+    }
+
 }

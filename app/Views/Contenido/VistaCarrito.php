@@ -22,7 +22,7 @@
                            <td><?= $item['author'] ?></td>
                            <td><?= $item['editorial'] ?></td>
                             <td>
-                                <a href="<?= base_url('cart/remove/' . $item['rowid']) ?>" class="btn btn-sm btn-danger">Eliminar</a>
+                                <a class="btn-eliminar btn btn-sm btn-danger"  data-id="<?= $item['id'] ?>">Eliminar</a>
                             </td>
                         </tr>
                     <?php endforeach; ?>
@@ -33,10 +33,12 @@
                 </tfoot>
             </table>
             
-            <div class="d-flex justify-content-between">
-                <a href="<?= base_url('tienda') ?>" class="btn btn-secondary">Seguir Comprando</a>
+            <div class="d-flex justify-content-between mx-2">
+                <a href="<?= base_url('tienda') ?>" class="btn btn-danger">Eliminar Carrito</a>
+                <a href="<?= base_url('/') ?>" class="btn btn-secondary">Seguir Comprando</a>
                 <a href="<?= base_url('checkout') ?>" class="btn btn-success">Pagar Ahora</a>
             </div>
 <?php }?>
+
 
 

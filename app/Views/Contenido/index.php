@@ -4,6 +4,7 @@
     <section class="mt-5">
         <h2 class="m-5 bg-primary b-5 text-center p-5">Página de inicio</h2>
         <div class="container">
+            <a href="<?php echo base_url('buy/showCart')?>">Mirar Carrito</a>
             <div class="row mt-3">
 
                 <?php foreach ($productos as $libro): ?>

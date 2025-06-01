@@ -37,9 +37,18 @@ class CartController extends BaseController{
     /**
      * Permite obtener los datos guardados en el carrito
      */
-    private function getCart(){
+    public function getCart(){
         return $this->cart->contents();
     }
+
+    public function getTotal(){
+        return $this->cart->total();
+    }
+
+    public function destruirCart(){
+        $this->cart->destroy();
+    }
+
 
     private function buscarArticulo($idProd){
         try {
@@ -135,11 +144,12 @@ class CartController extends BaseController{
     public function vaciarCarrito()
     {
         try {
-            $this->cart->destroy();
-            return $this->response->setJSON([
+                $this->cart->destroy();
+                return $this->response->setJSON([
                     'success' => true,
-                    'message' => 'Carrito eliminado.'
-                ]);
+                
+                        'message' => 'Carrito eliminado.'
+                    ]);
         } catch (\Throwable $th) {
               return $this->response->setJSON([
                     'success' => false,

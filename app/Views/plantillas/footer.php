@@ -127,10 +127,10 @@
 </html>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-J0ShSy5QmF6YWcKl0yYVhBcAUyOZJ4kS8HU5OwvKngwI7CkDTc9eDi7K3hsl+3x4j/vZ4LlOqOZ5icn4vh4D1Q==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-
-<script src="<?php echo base_url('assets/js/bootstrap.bundle.min.js');?>">
-	
-</script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="<?php echo base_url('assets/js/bootstrap.bundle.min.js');?>"></script>
+<script src="<?php echo base_url('assets/js/eliminarDelCarrito.js');?>"></script>
+<script src="<?php echo base_url('assets/js/controlarCompra.js');?>"></script>
 
 </body>
 

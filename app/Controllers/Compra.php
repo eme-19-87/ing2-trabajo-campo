@@ -8,22 +8,21 @@ use CodeIgniter\HTTP\ResponseInterface;
 use App\Models\CompraModel;
 use App\Controllers\CartController;
 
-class CompraController extends Controller
+class Compra extends Controller
 {
-    protected $cart;
+    protected $carrito;
     protected $db;
     private $compra;
 
     public function __construct()
     {
         //parent::__construct(); 
-        $this->cart = new CartController(); // ci4shoppingcart
-        $this->db = \Config\Database::connect();
+        $this->carrito = new Carrito(); // ci4shoppingcart
         $this->compra=new CompraModel();
     }
 
     private function controlarCarritoVacio(){
-        return $this->cart->getCart()<=0;
+        return $this->carrito->getCart()<=0;
     }
     public function controlarCompra(){
         if($this->controlarCarritoVacio()){
@@ -35,11 +34,11 @@ class CompraController extends Controller
                 // Supongamos que el usuario ya inició sesión 
             $dni = 32837262;
             $fecha = date('d-m-y');
-            $total = $this->cart->getTotal();
+            $total = $this->carrito->getTotal();
 
             // Construir JSON con los datos del carrito
             $items = [];
-            foreach ($this->cart->getCart() as $item) {
+            foreach ($this->carrito->getCart() as $item) {
                 $items[] = [
                     'id'     => intval($item['id']),
                     'qty'    => $item['qty'],
@@ -66,7 +65,7 @@ class CompraController extends Controller
         $mensajeRow = $this->compra->realizarCompra($total,$fecha,$dni,$detalles);
         //dd($mensajeRow);
         if ($mensajeRow->codigo >0) {
-            $this->cart->destruirCart(); // Vaciar carrito en caso de éxito
+            $this->carrito->destruirCart(); // Vaciar carrito en caso de éxito
             return $this->response->setJSON([
                 'success' => true,
                 'message' => $mensajeRow->mensaje

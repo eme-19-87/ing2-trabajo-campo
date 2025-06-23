@@ -5,16 +5,14 @@ namespace App\Controllers;
 use CodeIgniter\Entity\Cast\StringCast;
 use CodeIgniter\HTTP\Request;
 use CodeIgniter\Session\Session;
-use App\Models\Products;
-use App\Models\GeneroModel;
-use App\Models\AutorModel;
-use App\Models\EditorialModel;
+
 use App\Models\ArticuloModel;
 use ci4shoppingcart\Libraries\Cart;
 use PhpParser\Node\Stmt\TryCatch;
 
-class CartController extends BaseController{
+class Carrito extends BaseController{
     private $cart;
+    private $articulo;
     /**
      * Constructor de la clase ProductController
      */
@@ -22,7 +20,8 @@ class CartController extends BaseController{
     {
         //llamada al constructor de la superclase
         parent::__construct(); 
-        $this->cart=new Cart();  
+        $this->cart=new Cart(); 
+        $this->articulo=New ArticuloModel(); 
     }
 
     public function showCart(){
@@ -52,8 +51,8 @@ class CartController extends BaseController{
 
     private function buscarArticulo($idProd){
         try {
-            $articuloModel=New ArticuloModel();
-            $articulo=$articuloModel->getArticuloPorId(intval($idProd));
+           
+            $articulo=$this->articulo->getArticuloPorId(intval($idProd));
             return $articulo;
         } catch (\Throwable $th) {
             throw $th;

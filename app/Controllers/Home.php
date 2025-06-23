@@ -3,8 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\ArticuloModel;
-use App\Models\Roles;
-use ci4shoppingcart\Libraries\Cart;
+
 //https://github.com/bertugfahriozer/ci4shoppingcart carrito
 class Home extends BaseController
 {

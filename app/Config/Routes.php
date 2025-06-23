@@ -6,14 +6,14 @@ use CodeIgniter\Router\RouteCollection;
  * @var RouteCollection $routes
  */
 $routes->get('/', 'Home::index',['as'=>'index']);
-$routes->get('products', 'ArticuloController::show_product_form');
-$routes->post('create_book', 'ArticuloController::validarDatos');
-$routes->get('cart', 'CartController::showCart');
-$routes->post('cart/add/(:num)', 'CartController::controlAgregar/$1');
-$routes->get('cart/remove/(:any)', 'CartController::eliminarArticulo/$1');
-$routes->get('cart/delete', 'CartController::vaciarCarrito');
-$routes->get('buy/showCart','CompraController::mostrarCarrito');
-$routes->post('buy/registrar', 'CompraController::controlarCompra');
+$routes->get('products', 'Articulo::show_product_form');
+$routes->post('create_book', 'Articulo::validarDatos');
+$routes->get('cart', 'Carrito::showCart');
+$routes->post('cart/add/(:num)', 'Carrito::controlAgregar/$1');
+$routes->get('cart/remove/(:any)', 'Carrito::eliminarArticulo/$1');
+$routes->get('cart/delete', 'Carrito::vaciarCarrito');
+$routes->get('buy/showCart','Carrito::showCart');
+$routes->post('buy/registrar', 'Compra::controlarCompra');
 
 
 

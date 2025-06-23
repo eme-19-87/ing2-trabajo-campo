@@ -5,13 +5,16 @@ namespace App\Controllers;
 use CodeIgniter\Entity\Cast\StringCast;
 use CodeIgniter\HTTP\Request;
 use CodeIgniter\Session\Session;
-use App\Models\Products;
-use App\Models\GeneroModel;
+use App\Models\ArticuloModel;
 use App\Models\AutorModel;
 use App\Models\EditorialModel;
-use App\Models\ArticuloModel;
+use App\Models\GeneroModel;
 
-class ArticuloController extends BaseController{
+class Articulo extends BaseController{
+    private $genero;
+    private $editorial;
+    private $autor;
+    private $articulo;
     /**
      * Constructor de la clase ProductController
      */
@@ -19,19 +22,19 @@ class ArticuloController extends BaseController{
     {
         //llamada al constructor de la superclase
         parent::__construct();   
-       
+        $this->genero= new GeneroModel();
+        $this->autor=new AutorModel();
+        $this->editorial=new EditorialModel();
+        $this->articulo=new ArticuloModel();
     }
     public function show_product_form(){
        
         //creo los modelos para recuperar la información de generos, autores y editoriales
-        $generoModel = new GeneroModel(); 
-        $autorModel=new AutorModel();
-        $editorialModel=new EditorialModel();
-
+        
         //llamo a los métodos pertinentes para obtener los datos
-        $generos = $generoModel->getGeneros();
-        $autores=$autorModel->getAutores();
-        $editoriales=$editorialModel->getEditoriales();
+        $generos = $this->genero->getGeneros();
+        $autores=$this->autor->getAutores();
+        $editoriales=$this->editorial->getEditoriales();
 
         //cargo la vista
         return view('plantillas/head') .
@@ -70,9 +73,9 @@ class ArticuloController extends BaseController{
             'fecha_publicacion' =>date('Y-m-d', strtotime( $this->request->getPost('fecha_libro'))) 
         ];
         //creo una instancia del modelo LibroModel
-        $libroModel = new ArticuloModel();
+      
         //llamo al método para crear el nuevo libro
-        $resultado=$libroModel->insertaArticulo($datos);
+        $resultado=$this->articulo->insertaArticulo($datos);
        
         //este tiene dos campos: el resultado que será 0 si hay error, 1 en caso contrario
         //si no hubo error, retorno a la vista del formulario para cargar un nuevo libro

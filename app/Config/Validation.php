@@ -47,7 +47,7 @@ class Validation extends BaseConfig
      */
     public array $newBook=([
         'nombre_libro' => [
-            'rules' => 'required|is_unique[libro.titulo]',
+            'rules' => 'required|is_unique[articulo.titulo]',
             'errors' => [
                 'required' => 'El nombre es obligatorio.',
                 'is_unique' => 'Ya existe un libro con ese titullo.'

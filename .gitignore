@@ -7,3 +7,6 @@ assets/external/
 .venv/
 .vscode/
 quotes_data.csv
+.env
+.env.local
+.env.*.local

@@ -9,8 +9,8 @@ def index() -> rx.Component:
     return rx.vstack(
         navbar(),
         rx.vstack(
-            rx.heading("Trabajo Final Data Analytics. Devligth 2025", font_size="2em"),
-            rx.box("Análisis Base De Datos Olist Ecommerce Brazil", font_size="1.2em"),
+            rx.heading("Proyecto: Sistema de Inteligencia de Datos (BI Pipeline)", font_size="2em"),
+            rx.box("Análisis Base De Datos Dataco Supply Chain", font_size="1.2em"),
             rx.vstack(
                 rx.box("Presentación"),
                 spacing="2",
@@ -20,8 +20,19 @@ def index() -> rx.Component:
                 image_src="/favicon.ico",
                 title="Espinoza Enrique Manuel",
                 description=(
-                    "Estudiante de Licenciatura En Sistemas De Información 4º Año."
-                    "Analista Programador Universitario."
+                    "Estudiante de Licenciatura En Sistemas De Información 4º Año. "
+                    "DNI:32837262."
+                ),
+                footer_text="Linkedin:",
+                footer_link="https://www.linkedin.com/in/enrique-espinoza-948157224",
+                
+            ),
+                info_card(
+                image_src="/favicon.ico",
+                title="Canteros Murcia, Juan Ignacio Benjamin",
+                description=(
+                    "Estudiante de Licenciatura En Sistemas De Información 4º Año. "
+                    "DNI:42059611"
                 ),
                 footer_text="Linkedin:",
                 footer_link="https://www.linkedin.com/in/enrique-espinoza-948157224",

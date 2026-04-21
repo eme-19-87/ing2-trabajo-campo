@@ -4,7 +4,7 @@ import reflex as rx
 def navbar() -> rx.Component:
     """Reusable navigation bar with Customers dropdown."""
     return rx.hstack(
-        rx.heading("Brazil Ecommerce Explorer", size="5"),
+        rx.heading("Ingeniería De Software 2-2026", size="5"),
 
         rx.spacer(),
 
@@ -22,7 +22,7 @@ def navbar() -> rx.Component:
                     rx.link("Listar Usuarios", href="/customers")
                 ),
                 rx.menu.item(
-                    rx.link("Alta Usuarios", href="/customers/sales_by_state")
+                    rx.link("Alta Usuarios", href="/usuarios")
                 )
             ),
         ),

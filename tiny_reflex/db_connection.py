@@ -20,6 +20,6 @@ def get_engine():
         f"postgresql://{user}:{password}@{host}:{port}/{database}"
         f"?sslmode=require"
     )
-
+    
     engine = create_engine(connection_string)
     return engine

@@ -38,18 +38,15 @@ class UsuarioState(rx.State):
     #para cargar los roles
     roles_disponibles: list[dict] = []
     roles_loading: bool = False
-    
-    # Control de edición
-    editando_id: Optional[int] = None
+    id_rol_seleccionado: int = 0  # Guarda el ID del rol seleccionado
+    nombre_rol_seleccionado: str = ""  # Guarda el nombre del rol seleccionado
     
 
     
     # ===========================
     # FLAGS DE ESTADO
     # ===========================
-    loading_usuarios: bool = False
     saving_usuario: bool = False
-    deleting_usuario: bool = False
     
     
 
@@ -61,61 +58,83 @@ class UsuarioState(rx.State):
     def has_usuarios(self) -> bool:
         return len(self.usuarios_data) > 0
     
-    @rx.var
-    def is_editando(self) -> bool:
-        return self.editando_id is not None
     
     @rx.var
-    def titulo_formulario(self) -> str:
-        return "Editar Usuario" if self.is_editando else "Alta de Usuario"
-    
-    @rx.var
-    def texto_boton(self) -> str:
-        return "Actualizar Usuario" if self.is_editando else "Registrar Usuario"
-    
+    def is_user_insert(self)->bool:
+        return self.saving_usuario
        
     @rx.event
     def set_rol(self, value: str):
         """Actualiza el rol seleccionado."""
         self.rol = value
+    
+    @rx.event
+    def set_rol_por_id(self, value: str):
+        """Actualiza el rol seleccionado cuando cambia el select."""
+        # value es el nombre del rol seleccionado
+        self.nombre_rol_seleccionado = value
         
+        # Buscar el id_rol correspondiente
+        for rol in self.roles_disponibles:
+            if rol["nombre_rol"] == value:
+                self.id_rol_seleccionado = rol["id_rol"]
+                break
     
 
         
     def control_format(self):
         """Verifica si algún campo obligatorio está en blanco y muestra toast."""
         try:
-            mjs=Usuario.control_format(self.email,self.dni,self.nombre,self.apellido,self.password,1,self.confirmar_password)
+           
+            mjs=Usuario.control_format(self.email,self.dni,self.nombre,self.apellido,self.password,self.id_rol_seleccionado,self.confirmar_password)
             if len(mjs)>0:
-                return rx.toast.error(mjs, position="center")
+                return self.view_toast(mjs,2)
         
-        
+            
         # Si todos los campos están completos
-            return rx.toast.success("✅ Todos los campos están completos", position="top-right")
+            self.saving_usuario=True
+            yield rx.toast.info("⏳ Por favor, verifique el mensaje...", position="top-right", duration=None)
+            if not Persona.control_dni(self.dni):
+                mjs+="El dni del usuario ya figura en el sistema"
+                return rx.toast.info(mjs, position="top-right", duration=None)
+            
+            if not Usuario.control_email(self.email):
+                mjs+="El email del usuario ya figura en el sistema"
+                return rx.toast.info(mjs, position="top-right", duration=None)
+            
+            if Usuario.create_user(self.nombre,self.apellido,self.dni,self.email,self.password,self.id_rol_seleccionado):
+                self.saving_usuario=False
+                return rx.toast.success("Usuario creada correctamente", position="top-right", duration=None)
+            
+            return self.view_toast("Error al insertar el usuario",2)
         except Exception as e:
-            return rx.toast.error(f"Se ha producido un error: {e}", position="top-right")
+            return self.view_toast(f"Error al insertar usuario: {e}",2)
+        finally:
+            self.saving_usuario=False
     
  
-
-    
-    
+    def view_toast(self,msj:str, msj_type: int):
+        if msj_type==1:
+            return rx.toast.success(msj, position="top-right")
+        else:
+            return rx.toast.error(msj, position="top-right")
+        
     @rx.event
     async def cargar_roles(self):
         """Carga los roles desde la base de datos."""
         self.roles_loading = True
         
         try:
-            # Ejecutar la consulta en un hilo separado
-            roles = await rx.run_in_thread(UserQueries.get_roles)
             
-            self.roles_disponibles = roles
-            rx.toast.error(f"roles: {roles}", position="top-right")
-            # Si hay roles y el rol actual no está seleccionado, seleccionar el primero
-            if roles and not self.rol:
-                self.rol = roles[0]["nombre_rol"]
+            self.roles_disponibles = await rx.run_in_thread(UserQueries.get_roles)
+            
+            # Seleccionar el primer rol por defecto si hay roles disponibles
+            if self.roles_disponibles and self.id_rol_seleccionado == 0:
+                self.id_rol_seleccionado = self.roles_disponibles[0]["id_rol"]
+                self.nombre_rol_seleccionado = self.roles_disponibles[0]["nombre_rol"]
                 
         except Exception as e:
-            rx.toast.error(f"Error al cargar roles: {e}", position="top-right")
+            yield rx.toast.error(f"Error al cargar roles: {e}", position="top-right")
         
         self.roles_loading = False
     

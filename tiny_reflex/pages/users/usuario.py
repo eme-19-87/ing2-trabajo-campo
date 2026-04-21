@@ -17,7 +17,7 @@ def formulario_usuario() -> rx.Component:
     """Formulario para alta y edición de usuarios."""
     return rx.card(
         rx.vstack(
-           
+            rx.heading("Alta De Usuarios", font_size="2em",align="center"),
             # Campo: Nombre
             rx.text("Nombre:", font_weight="bold"),
             rx.input(
@@ -69,14 +69,7 @@ def formulario_usuario() -> rx.Component:
                 width="100%",
                
             ),
-            rx.cond(
-                UsuarioState.is_editando,
-                rx.text(
-                    "Dejar en blanco para mantener la contraseña actual",
-                    font_size="xs",
-                    color="gray",
-                ),
-            ),
+           
             
             # Campo: Repetir Contraseña
             rx.text("Repetir Contraseña:", font_weight="bold"),
@@ -95,8 +88,8 @@ def formulario_usuario() -> rx.Component:
                 rx.spinner(),  # Mostrar spinner mientras carga
                 rx.select(
                     UsuarioState.opciones_roles_select,
-                    value=UsuarioState.rol,
-                    on_change=UsuarioState.set_rol,
+                    value=UsuarioState.nombre_rol_seleccionado,
+                    on_change=UsuarioState.set_rol_por_id,
                     width="100%",
                     placeholder="Seleccione un rol",
                     on_mount=UsuarioState.cargar_roles
@@ -107,11 +100,11 @@ def formulario_usuario() -> rx.Component:
             # Botones
             rx.hstack(
                 rx.button(
-                    UsuarioState.texto_boton,
+                    "Ingresar",
                     on_click=UsuarioState.control_format,
                     color_scheme="blue",
-                    loading=UsuarioState.saving_usuario,
                     width="100%",
+                    loading=UsuarioState.saving_usuario
             ),
             
             spacing="4",

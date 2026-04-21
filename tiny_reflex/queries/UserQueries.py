@@ -34,6 +34,7 @@ class UserQueries:
                     return True
                     
         except Exception as e:
+            print(f"{e}")
             raise Exception(f"Error al ingresar el nuevo usuario: {e}")
         
 

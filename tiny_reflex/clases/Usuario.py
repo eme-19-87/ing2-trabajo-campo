@@ -19,9 +19,9 @@ class Usuario:
     ) -> str:
         try:
             msj=""
-            dni_exist=False
+            dni_exist=True
             if not nombre.strip():
-                msj="El nombre no puede quedar vacío."
+                msj+="El nombre no puede quedar vacío."
 
             if not apellido.strip():
                 msj+="\nEl apellido no puede quedar vacío."
@@ -33,22 +33,19 @@ class Usuario:
             if not re.match(patron, email):
                 msj+="\n Ingrese un email válido."
             
-            if not dni.strip() or len(dni)<8:
-                msj+="\n Ingrese un dni válido con 8 caracteres mínimo con sólo números."
                 
             if contrasenia!=contrarep:
                 msj+="\n Las contraseñas no coinciden."
 
-            if len(msj)==0:
-                dni_exist=Persona.control_dni(dni)
-            
-            if not dni_exist:
-                msj=Usuario.control_email(email)
+            if Persona.control_dni(dni):
+                msj+=Usuario.control_email(email)
             else:
-                msj="El dni que se quiere ingresar corresponde a otro usuario."
+                msj+="El dni debe tener 8 dígitos como mínimo sin puntos. Si el error persiste, es posible que el dni ingresado ya figure para otro usuario"
             
             if len(msj)==0:
-                Usuario.create_user(nombre,apellido,dni,email,contrasenia,rol)
+                msj+=Usuario.create_user(nombre,apellido,dni,email,contrasenia,rol)
+            
+            return msj
         except Exception as e:
             raise e
         

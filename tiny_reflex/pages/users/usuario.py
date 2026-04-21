@@ -107,11 +107,11 @@ def formulario_usuario() -> rx.Component:
             # Botones
             rx.hstack(
                 rx.button(
-                 UsuarioState.texto_boton,
-                on_click=UsuarioState.control_insert_user,
-                color_scheme="blue",
-                loading=UsuarioState.saving_usuario,
-                width="100%",
+                    UsuarioState.texto_boton,
+                    on_click=UsuarioState.control_format,
+                    color_scheme="blue",
+                    loading=UsuarioState.saving_usuario,
+                    width="100%",
             ),
             
             spacing="4",

@@ -42,15 +42,7 @@ class UsuarioState(rx.State):
     # Control de edición
     editando_id: Optional[int] = None
     
-    # Mensajes y feedback
-    mensaje: str = ""
-    tipo_mensaje: str = "success"  # "success" o "error"
-    
-    # Opciones para selectores
-    opciones_roles: list[dict] = [
-        {"label": "Administrador", "value": 1},
-        {"label": "Analista", "value": 2},
-    ]
+
     
     # ===========================
     # FLAGS DE ESTADO
@@ -59,10 +51,6 @@ class UsuarioState(rx.State):
     saving_usuario: bool = False
     deleting_usuario: bool = False
     
-    # ===========================
-    # ID SECUENCIAL SIMULADO (para demo sin BD)
-    # ===========================
-    next_id: int = 1
     
 
     
@@ -85,42 +73,29 @@ class UsuarioState(rx.State):
     def texto_boton(self) -> str:
         return "Actualizar Usuario" if self.is_editando else "Registrar Usuario"
     
-   
-    @rx.event
-    def cancelar_edicion(self):
-        """Cancela la edición y limpia el formulario."""
-        self._limpiar_formulario()
-        self.mensaje = ""
-    
-    @rx.event
-    def limpiar_mensaje(self):
-        """Limpia el mensaje mostrado."""
-        self.mensaje = ""
-    
+       
     @rx.event
     def set_rol(self, value: str):
         """Actualiza el rol seleccionado."""
         self.rol = value
         
     
-    
-   
+
         
-    def control_insert_user(self):
+    def control_format(self):
         """Verifica si algún campo obligatorio está en blanco y muestra toast."""
         try:
-            mjs=Usuario.control_format(self.email,self.dni,self.nombre,self.apellido,self.password)
+            mjs=Usuario.control_format(self.email,self.dni,self.nombre,self.apellido,self.password,1,self.confirmar_password)
             if len(mjs)>0:
-                return rx.toast.error(mjs, position="top-right")
+                return rx.toast.error(mjs, position="center")
         
         
         # Si todos los campos están completos
             return rx.toast.success("✅ Todos los campos están completos", position="top-right")
         except Exception as e:
-            return rx.toast.success(f"Se ha producido un error: {e}", position="top-right")
+            return rx.toast.error(f"Se ha producido un error: {e}", position="top-right")
     
-    from tiny_reflex.queries.UserQueries import UserQueries
-
+ 
 
     
     

@@ -6,9 +6,7 @@ from typing import Optional
 from tiny_reflex.clases.Persona import Persona
 from tiny_reflex.clases.Usuario import Usuario
 from tiny_reflex.queries.UserQueries import UserQueries
-from tiny_reflex.types import (
-    UserData
-)
+
 
 
 
@@ -24,7 +22,8 @@ class UsuarioState(rx.State):
     # ===========================
     # DATASETS PRINCIPALES
     # ===========================
-    usuarios_data: list[UserData] = []
+    usuarios: list[dict] = []
+    cargando_usuarios: bool = False
     
     # Campos del formulario
     nombre: str = ""
@@ -34,6 +33,12 @@ class UsuarioState(rx.State):
     confirmar_password: str = ""
     rol: str = "Analista"
     dni: str
+    
+    cargando_usuarios: bool = False
+    error_usuarios: str = ""
+    
+    # Variables para búsqueda/filtro
+    busqueda: str = ""
     
     #para cargar los roles
     roles_disponibles: list[dict] = []
@@ -56,7 +61,7 @@ class UsuarioState(rx.State):
     # ===========================
     @rx.var
     def has_usuarios(self) -> bool:
-        return len(self.usuarios_data) > 0
+        return len(self.usuarios) > 0
     
     
     @rx.var
@@ -146,4 +151,74 @@ class UsuarioState(rx.State):
             rol["nombre_rol"]
             for rol in self.roles_disponibles
         ]
+    
+    @rx.event
+    async def cargar_usuarios(self):
+        """Carga todos los usuarios desde la base de datos."""
+        self.cargando_usuarios = True
+        try:
+            usuarios = await rx.run_in_thread(UserQueries.get_all_users)
+            self.usuarios = usuarios
+        except Exception as e:
+            yield rx.toast.error(f"Error al cargar usuarios: {e}", position="top-right")
+        finally:
+            self.cargando_usuarios = False
+    
+    @rx.event
+    async def cambiar_estado_usuario(self, id_usuario: int, estado_actual: bool):
+        """Cambia el estado del usuario (activo/inactivo)."""
         
+        # Mostrar toast de proceso
+        yield rx.toast.info("⏳ Cambiando estado del usuario...", position="top-right")
+        
+        try:
+            # Llamar al procedimiento almacenado para cambiar estado
+            # Asumiendo que tienes un método como este en UserQueries
+            exito = await rx.run_in_thread(
+                UserQueries.cambiar_estado_usuario,
+                id_usuario,
+                not estado_actual  # Invertir el estado
+            )
+            
+            if exito:
+                nuevo_estado = "activado" if not estado_actual else "desactivado"
+                yield rx.toast.success(f"✅ Usuario {nuevo_estado} correctamente", position="top-right")
+                # Recargar la lista de usuarios
+                await self.cargar_usuarios()
+            else:
+                yield rx.toast.error("❌ Error al cambiar el estado", position="top-right")
+                
+        except Exception as e:
+            yield rx.toast.error(f"❌ Error: {e}", position="top-right")
+            
+    @rx.event
+    def set_busqueda(self, valor: str):
+        """Actualiza el filtro de búsqueda."""
+        self.busqueda = valor
+    
+    @rx.var
+    def usuarios_filtrados(self) -> list[dict]:
+        """Retorna usuarios filtrados por búsqueda."""
+        if not self.busqueda.strip():
+            return self.usuarios
+        
+        busqueda_lower = self.busqueda.lower().strip()
+        
+        return [
+            u for u in self.usuarios
+            if busqueda_lower in u.get("nombre", "").lower()
+            or busqueda_lower in u.get("apellido", "").lower()
+            or busqueda_lower in u.get("email", "").lower()
+            or busqueda_lower in u.get("dni", "").lower()
+            or busqueda_lower in u.get("nombre_rol", "").lower()
+        ]
+    
+    @rx.var
+    def total_usuarios(self) -> int:
+        """Retorna el total de usuarios."""
+        return len(self.usuarios)
+    
+    @rx.var
+    def total_filtrados(self) -> int:
+        """Retorna el total de usuarios filtrados."""
+        return len(self.usuarios_filtrados)

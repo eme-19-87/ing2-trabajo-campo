@@ -3,7 +3,17 @@ from sqlalchemy import text
 class Personaqueries:
     @staticmethod
     def exists_dni(dni: str) -> bool:
-        """Verifica si un DNI ya existe usando la función exists_dni_func."""
+        """
+            Verifica la existencia del dni invocando una función en la base de datos
+        Args:
+            dni (str): El dni que quiere verificarse
+
+        Raises:
+            Exception: Eleva una excepción en caso de error. Por ejemplo, si el dni ya existe en la base de datos.
+
+        Returns:
+            bool: Retorna true en caso que el dni exista. Retorna false en caso contrario.
+        """
         try:
             engine = get_engine()
             

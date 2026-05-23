@@ -19,7 +19,7 @@ def navbar() -> rx.Component:
             ),
             rx.menu.content(
                  rx.menu.item(
-                    rx.link("Listar Usuarios", href="/customers")
+                    rx.link("Listar Usuarios", href="/lista_usuarios")
                 ),
                 rx.menu.item(
                     rx.link("Alta Usuarios", href="/usuarios")

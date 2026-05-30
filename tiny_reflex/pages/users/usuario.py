@@ -103,7 +103,7 @@ def tabla_usuarios_avanzada() -> rx.Component:
                                                 user["activo"],
                                                 # Si está activo → Botón "Baja"
                                                 rx.button(
-                                                    "Dar de Baja",
+                                                    "Baja",
                                                     color_scheme="red",
                                                     size="2",
                                                     variant="soft",
@@ -112,7 +112,7 @@ def tabla_usuarios_avanzada() -> rx.Component:
                                                 ),
                                                 # Si está inactivo → Botón "Alta"
                                                 rx.button(
-                                                    "Dar de Alta",
+                                                    "Alta",
                                                     color_scheme="green",
                                                     size="2",
                                                     variant="soft",
@@ -121,6 +121,7 @@ def tabla_usuarios_avanzada() -> rx.Component:
                                                 ),
                                             )
                                         ),
+                                        rx.table.cell(boton_actualizar(user["id_usuario"]))
                                     ),
                                 ),
                             ),
@@ -151,10 +152,12 @@ def tabla_usuarios_avanzada() -> rx.Component:
     )
 
 def formulario_usuario() -> rx.Component:
-    """Formulario para alta y edición de usuarios."""
+    """Formulario para alta y edición de usuarios con confirmación al cancelar."""
     return rx.card(
         rx.vstack(
-            rx.heading("Alta De Usuarios", font_size="2em",align="center"),
+            # Título dinámico
+            rx.heading(UsuarioState.titulo_formulario, font_size="2em", align="center"),
+
             # Campo: Nombre
             rx.text("Nombre:", font_weight="bold"),
             rx.input(
@@ -164,7 +167,7 @@ def formulario_usuario() -> rx.Component:
                 width="100%",
                 required=True,
             ),
-            
+
             # Campo: Apellido
             rx.text("Apellido:", font_weight="bold"),
             rx.input(
@@ -174,8 +177,8 @@ def formulario_usuario() -> rx.Component:
                 width="100%",
                 required=True,
             ),
-            
-            #Campo: DNI
+
+            # Campo: DNI
             rx.text("DNI:", font_weight="bold"),
             rx.input(
                 placeholder="DNI de al menos 8 números sin puntos",
@@ -184,66 +187,131 @@ def formulario_usuario() -> rx.Component:
                 width="100%",
                 required=True,
             ),
-            
+
             # Campo: Email
             rx.text("Email:", font_weight="bold"),
             rx.input(
-                placeholder="UsuarioState@ejemplo.com",
+                placeholder="usuario@ejemplo.com",
                 type="email",
                 value=UsuarioState.email,
                 on_change=UsuarioState.set_email,
                 width="100%",
                 required=True,
             ),
-            
-            # Campo: Contraseña
-            rx.text("Contraseña:", font_weight="bold"),
-            rx.input(
-                placeholder="Ingrese contraseña",
-                type="password",
-                value=UsuarioState.password,
-                on_change=UsuarioState.set_password,
-                width="100%",
-               
+
+            # Campo: Contraseña (solo en modo creación)
+            rx.cond(
+                UsuarioState.editando_id,
+                rx.fragment(),  # no mostrar en edición
+                rx.vstack(
+                    rx.text("Contraseña:", font_weight="bold"),
+                    rx.input(
+                        placeholder="Ingrese contraseña",
+                        type="password",
+                        value=UsuarioState.password,
+                        on_change=UsuarioState.set_password,
+                        width="100%",
+                    ),
+                    spacing="2",
+                    width="100%",
+                ),
             ),
-           
-            
-            # Campo: Repetir Contraseña
-            rx.text("Repetir Contraseña:", font_weight="bold"),
-            rx.input(
-                placeholder="Repita la contraseña",
-                type="password",
-                value=UsuarioState.confirmar_password,
-                on_change=UsuarioState.set_confirmar_password,
-                width="100%"
+
+            # Campo: Repetir Contraseña (solo en modo creación)
+            rx.cond(
+                UsuarioState.editando_id,
+                rx.fragment(),
+                rx.vstack(
+                    rx.text("Repetir Contraseña:", font_weight="bold"),
+                    rx.input(
+                        placeholder="Repita la contraseña",
+                        type="password",
+                        value=UsuarioState.confirmar_password,
+                        on_change=UsuarioState.set_confirmar_password,
+                        width="100%",
+                    ),
+                    spacing="2",
+                    width="100%",
+                ),
             ),
-            
+
             # Campo: Rol (Select desde BD)
             rx.text("Rol:", font_weight="bold"),
             rx.cond(
                 UsuarioState.roles_loading,
-                rx.spinner(),  # Mostrar spinner mientras carga
+                rx.spinner(),
                 rx.select(
                     UsuarioState.opciones_roles_select,
                     value=UsuarioState.nombre_rol_seleccionado,
                     on_change=UsuarioState.set_rol_por_id,
                     width="100%",
                     placeholder="Seleccione un rol",
-                    on_mount=UsuarioState.cargar_roles
+                    on_mount=UsuarioState.cargar_roles,
                 ),
             ),
-            
-            
-            # Botones
-            rx.hstack(
+
+            # Botones según modo (edición o creación)
+            rx.cond(
+                UsuarioState.editando_id,
+                # Modo edición: botones Actualizar y Cancelar
+                rx.vstack(
+                    rx.button(
+                        "Actualizar",
+                        on_click=UsuarioState.control_format_update,
+                        color_scheme="blue",
+                        width="100%",
+                        loading=UsuarioState.saving_usuario,
+                    ),
+                    rx.button(
+                        "Cancelar",
+                        on_click=UsuarioState.abrir_dialogo_cancelar,
+                        color_scheme="gray",
+                        width="100%",
+                        loading=UsuarioState.cancelando,  # muestra spinner mientras se cancela
+                    ),
+                    spacing="2",
+                    width="100%",
+                ),
+                # Modo creación: solo botón Ingresar
                 rx.button(
                     "Ingresar",
                     on_click=UsuarioState.control_format,
                     color_scheme="blue",
                     width="100%",
-                    loading=UsuarioState.saving_usuario
+                    loading=UsuarioState.saving_usuario,
+                ),
             ),
-            
+
+            # Diálogo de confirmación de cancelación
+            rx.alert_dialog.root(
+                rx.alert_dialog.content(
+                    rx.alert_dialog.title("Cancelar edición"),
+                    rx.alert_dialog.description(
+                        "¿Estás seguro de que deseas cancelar la edición? "
+                        "Los cambios no guardados se perderán."
+                    ),
+                    rx.flex(
+                        rx.alert_dialog.cancel(
+                            rx.button(
+                                "No, seguir editando",
+                                color_scheme="gray",
+                                on_click=UsuarioState.cerrar_dialogo_cancelar,
+                            )
+                        ),
+                        rx.alert_dialog.action(
+                            rx.button(
+                                "Sí, cancelar",
+                                color_scheme="red",
+                                on_click=UsuarioState.confirmar_cancelar_edicion,
+                            )
+                        ),
+                        spacing="3",
+                        justify="end",
+                    ),
+                ),
+                open=UsuarioState.dialogo_cancelar_abierto,
+            ),
+
             spacing="4",
             width="100%",
         ),
@@ -251,7 +319,7 @@ def formulario_usuario() -> rx.Component:
         padding="6",
         box_shadow="3",
     )
-    )
+    
 
 
 def pagina_usuarios() -> rx.Component:
@@ -286,6 +354,15 @@ def listar_usuarios() -> rx.Component:
         width="100%",
         padding="4",
         align="center",
+    )
+    
+def boton_actualizar(usuario_id: int) -> rx.Component:
+    return rx.button(
+        "Actualizar",
+        color_scheme="blue",
+        size="2",
+        variant="soft",
+        on_click=lambda: UsuarioState.set_usuario_editar(usuario_id),
     )
 
 # Para agregar la página a la aplicación (en tu archivo principal)

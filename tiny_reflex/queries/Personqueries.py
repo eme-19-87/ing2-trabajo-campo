@@ -1,8 +1,9 @@
 from tiny_reflex.db_connection import get_engine
 from sqlalchemy import text
+from sqlalchemy.exc import SQLAlchemyError, DBAPIError
 class Personaqueries:
     @staticmethod
-    def exists_dni(dni: str) -> bool:
+    def exists_dni(dni: str) -> str:
         """
             Verifica la existencia del dni invocando una función en la base de datos
         Args:
@@ -23,7 +24,52 @@ class Personaqueries:
                     {"p_dni": dni}
                 )
                 exists = result.scalar()
-                return exists if exists is not None else False
+                return exists if len(exists)==0 else exists
                 
+        except DBAPIError as e:
+            # Para errores de base de datos (incluye RAISE EXCEPTION)
+            # El mensaje original suele estar en e.orig.args[0]
+            if e.orig and len(e.orig.args) > 0:
+                error_msg = str(e.orig.args[0])
+            else:
+                error_msg = str(e)
+            raise Exception(error_msg) from e
         except Exception as e:
-            raise Exception(f"Error al verificar DNI: {e}")
+            # Otros errores (conexión, etc.)
+            raise Exception(str(e)) from e
+        
+    @staticmethod
+    def control_update_dni(id_usuario:int,dni: str) -> str:
+        """
+            Verifica la existencia del dni invocando una función en la base de datos
+        Args:
+            dni (str): El dni que quiere verificarse
+
+        Raises:
+            Exception: Eleva una excepción en caso de error. Por ejemplo, si el dni ya existe en la base de datos.
+
+        Returns:
+            bool: Retorna true en caso que el dni exista. Retorna false en caso contrario.
+        """
+        try:
+            engine = get_engine()
+            
+            with engine.connect() as conn:
+                result = conn.execute(
+                    text("SELECT usuario.control_update_dni(:p_id_usuario,:p_dni)"),
+                    {"p_id_usuario":id_usuario, "p_dni": dni}
+                )
+                exists = result.scalar()
+                return exists if len(exists)>0 else exists
+                
+        except DBAPIError as e:
+            # Para errores de base de datos (incluye RAISE EXCEPTION)
+            # El mensaje original suele estar en e.orig.args[0]
+            if e.orig and len(e.orig.args) > 0:
+                error_msg = str(e.orig.args[0])
+            else:
+                error_msg = str(e)
+            raise Exception(error_msg) from e
+        except Exception as e:
+            # Otros errores (conexión, etc.)
+            raise Exception(str(e)) from e

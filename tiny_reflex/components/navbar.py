@@ -23,6 +23,9 @@ def navbar() -> rx.Component:
                 ),
                 rx.menu.item(
                     rx.link("Alta Usuarios", href="/usuarios")
+                ),
+                rx.menu.item(
+                    rx.link("Gráficos", href="/graficas")
                 )
             ),
         ),

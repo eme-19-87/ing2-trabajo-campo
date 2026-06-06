@@ -120,6 +120,112 @@ def test_update_user_bad_format_email():
     assert "Formato de email inválido" in str(excinfo.value)
     #assert dni in str(excinfo.value)
     
+def test_update_user_empty_dni():
+    """
+    Prueba que permite verificar si hay un dni duplicado. Si la prueba es exitosa, significa que sí está duplicado
+    el dni y la excepción se levanta correctamente.
+    """
+    id_usuario=2
+    nombre = "Juan"
+    apellido = "Perez"
+    dni = ""
+    email = "espinoza.enrique.87gmail.com"
+    password = "secreto123"
+    rol_id = 2  # Asegúrate de que este ID exista en tu BD de pruebas
+
+    usuario=Usuario(id_usuario,nombre,apellido,dni,email,password,password,Rol(rol_id,"Analista"))
+    with pytest.raises(Exception) as excinfo:
+        usuario.update_user(id_usuario,nombre,apellido,dni,email,rol_id)
+
+    # 3. Verificar el resultado esperado
+    assert "El DNI no puede estar vacío" in str(excinfo.value)
+    #assert dni in str(excinfo.value)
+    
+def test_update_user_empty_name():
+    """
+    Prueba que permite verificar si hay un dni duplicado. Si la prueba es exitosa, significa que sí está duplicado
+    el dni y la excepción se levanta correctamente.
+    """
+    id_usuario=2
+    nombre = ""
+    apellido = "Perez"
+    dni = "43678123"
+    email = "espinoza.enrique.87gmail.com"
+    password = "secreto123"
+    rol_id = 2  # Asegúrate de que este ID exista en tu BD de pruebas
+
+    usuario=Usuario(id_usuario,nombre,apellido,dni,email,password,password,Rol(rol_id,"Analista"))
+    with pytest.raises(Exception) as excinfo:
+        usuario.update_user(id_usuario,nombre,apellido,dni,email,rol_id)
+
+    # 3. Verificar el resultado esperado
+    assert "El nombre no puede estar vacío" in str(excinfo.value)
+    #assert dni in str(excinfo.value)
+    
+def test_update_user_empty_lastname():
+    """
+    Prueba que permite verificar si hay un dni duplicado. Si la prueba es exitosa, significa que sí está duplicado
+    el dni y la excepción se levanta correctamente.
+    """
+    id_usuario=2
+    nombre = "Maria"
+    apellido = ""
+    dni = "43678123"
+    email = "espinoza.enrique.87gmail.com"
+    password = "secreto123"
+    rol_id = 2  # Asegúrate de que este ID exista en tu BD de pruebas
+
+    usuario=Usuario(id_usuario,nombre,apellido,dni,email,password,password,Rol(rol_id,"Analista"))
+    with pytest.raises(Exception) as excinfo:
+        usuario.update_user(id_usuario,nombre,apellido,dni,email,rol_id)
+
+    # 3. Verificar el resultado esperado
+    assert "El apellido no puede estar vacío" in str(excinfo.value)
+    #assert dni in str(excinfo.value)
+    
+def test_update_user_negative_id_user():
+    """
+    Prueba que permite verificar si hay un dni duplicado. Si la prueba es exitosa, significa que sí está duplicado
+    el dni y la excepción se levanta correctamente.
+    """
+    id_usuario=-2
+    nombre = "Maria"
+    apellido = "Perez"
+    dni = "43678123"
+    email = "maria_perez@gmail.com"
+    password = "secreto123"
+    rol_id = 2  # Asegúrate de que este ID exista en tu BD de pruebas
+
+    usuario=Usuario(id_usuario,nombre,apellido,dni,email,password,password,Rol(rol_id,"Analista"))
+    with pytest.raises(Exception) as excinfo:
+        usuario.update_user(id_usuario,nombre,apellido,dni,email,rol_id)
+
+    # 3. Verificar el resultado esperado
+    assert "Identificador de usuario inválido" in str(excinfo.value)
+    #assert dni in str(excinfo.value)
+    
+def test_update_user_zero_id_user():
+    """
+    Prueba que permite verificar si hay un dni duplicado. Si la prueba es exitosa, significa que sí está duplicado
+    el dni y la excepción se levanta correctamente.
+    """
+    id_usuario=0
+    nombre = "Maria"
+    apellido = "Perez"
+    dni = "43678123"
+    email = "maria_perez@gmail.com"
+    password = "secreto123"
+    rol_id = 2  # Asegúrate de que este ID exista en tu BD de pruebas
+
+    usuario=Usuario(id_usuario,nombre,apellido,dni,email,password,password,Rol(rol_id,"Analista"))
+    with pytest.raises(Exception) as excinfo:
+        usuario.update_user(id_usuario,nombre,apellido,dni,email,rol_id)
+
+    # 3. Verificar el resultado esperado
+    assert "Identificador de usuario inválido" in str(excinfo.value)
+    #assert dni in str(excinfo.value)
+    
+    
 if __name__ == '__main__':
     unittest.main()
   

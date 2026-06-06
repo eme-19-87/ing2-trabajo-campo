@@ -41,7 +41,7 @@ class Usuario(Persona):
         self._contrasenia = None       # Se asigna vía setter (con validación)
         self._contrarep = None         # Solo para validación, no se persiste
         self._rol = None
-
+    
         # Asignaciones que activan los setters (validaciones)
         self.email = email
         self.contrasenia = contrasenia
@@ -95,7 +95,8 @@ class Usuario(Persona):
         """Setter de la repetición de contraseña. No se almacena permanentemente."""
         # Solo se almacena temporalmente para validar con contrasenia
         self._contrarep = value
-     
+    
+    
 
     @property
     def rol(self) -> Rol:

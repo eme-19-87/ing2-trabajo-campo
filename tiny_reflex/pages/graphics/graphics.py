@@ -60,8 +60,8 @@ def filtros() -> rx.Component:
                     spacing="1",
                 ),
                 rx.button(
-                    "Aplicar filtros",
-                    on_click=DashboardUI.dibujar_grafico_ventas,   # <-- aquí el método
+                    "Graficar",
+                    on_click=DashboardUI.buscar_datos,   # <-- aquí el método
                     color_scheme="blue",
                     margin_top="auto",
                 ),

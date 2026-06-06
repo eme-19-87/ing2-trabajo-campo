@@ -9,24 +9,28 @@ from tiny_reflex.clases.DashboardController import DashboardController
 
 class DashboardUI(rx.State):
     
-    datos: List[dict] = []   # <- ahora lista de diccionarios (serializable)
+   
     fecha_inicio: str = ""
     fecha_fin: str = ""
-    
-    categorias: list[str] = []
-    regiones: list[str] = []
-    
     categoria_seleccionada: str = ""
-    region_seleccionada: str = ""
+    estado_seleccionado: str = ""
     
+    
+    #variables para controlar los estados de la vista (proios de Reflex)
+    #los datos que se mostrarán en el desplegable de categorías y estados
+    categorias: list[str] = []
+    estados: list[str] = []
+    #controla lo que se mostrará o no mientras se están cargando los datos y el gráfico
     cargando_categorias: bool = False
-    cargando_regiones: bool = False
+    cargando_estados: bool = False
     cargando_grafico: bool = False
-    
+    #el conjunto de datos recuperados para mostrarlos en el gráfico
+    datos: List[dict] = []  
+    #el gráfico que se mostrará
     figura: go.Figure = px.line()
 
     @rx.event
-    async def cargar_y_graficar(self):
+    async def buscar_datos(self):
         self.cargando_grafico = True
         yield
         
@@ -35,20 +39,18 @@ class DashboardUI(rx.State):
                 "fecha_inicio": self.fecha_inicio,
                 "fecha_fin": self.fecha_fin,
                 "categoria": self.categoria_seleccionada,
-                "region": self.region_seleccionada,
+                "estado": self.estado_seleccionado,
             }
-            dashboard = DashboardController()
+            dashboard=DashboardController()
             dashboard.aplicar_filtros(json.dumps(filtros))
-            func = functools.partial(dashboard.obtener_datos_metricas)
-            datos_dict = await rx.run_in_thread(func)
-            
-            # Guardar directamente los diccionarios (ya serializables)
-            self.datos = datos_dict if datos_dict else []
+            self.datos=dashboard.obtener_datos_estado_categoria()
+            print("En DasboardUI:")
+            print(self.datos)
+            self.dibujar_estado_categoria()
             
         except Exception as e:
-            print(f"{e}")
             # Ya no asignamos self.figura, solo mostramos toast si quieres
-            yield rx.toast.error(f"Error: {e}", position="top-right")
+            yield rx.toast.error(f"{e}", position="top-right")
         finally:
             self.cargando_grafico = False
 
@@ -61,54 +63,62 @@ class DashboardUI(rx.State):
             categorias = await rx.run_in_thread(func)
             self.categorias = sorted(categorias)
         except Exception as e:
-            print(f"Error cargando categorías: {e}")
+             yield rx.toast.error(f"{e}", position="top-right")
         finally:
             self.cargando_categorias = False
 
     @rx.event
-    async def cargar_regiones(self):
-        self.cargando_regiones = True
+    async def cargar_estados(self):
+        self.cargando_estados = True
         try:
             dashboard = DashboardController()
             func = functools.partial(dashboard.obtener_estados)
-            regiones = await rx.run_in_thread(func)
-            self.regiones = sorted(regiones)
+            estados = await rx.run_in_thread(func)
+            self.estados = sorted(estados)
         except Exception as e:
-            print(f"{e}")
+             yield rx.toast.error(f"{e}", position="top-right")
         finally:
-            self.cargando_regiones = False
+            self.cargando_estados = False
 
     @rx.event
     def set_fecha_inicio(self, valor: str):
+     
         self.fecha_inicio = valor
 
     @rx.event
     def set_fecha_fin(self, valor: str):
+       
         self.fecha_fin = valor
 
     @rx.event
     def set_categoria_seleccionada(self, valor: str):
+   
         self.categoria_seleccionada = valor
 
     @rx.event
     def set_region_seleccionada(self, valor: str):
-        self.region_seleccionada = valor
+      
+        self.estado_seleccionado = valor
 
-    @rx.event
-    def dibujar_grafico_ventas(self):
-        dashboard = DashboardController()
-        self.datos=dashboard.obtener_datos_metricas()
+   
+    def dibujar_estado_categoria(self):
+        
+        try:
+            df = pd.DataFrame(self.datos)   # <- ahora self.datos ya son dicts
+            print("En la parte de la gráfica")
+            print(df)
+            # Ajusta los nombres de columna según lo que devuelve tu consulta
+            if 'mes_nombre' in df and 'total_venta_neta' in df:
+                self.figura = px.bar(
+                df,
+                x="mes_nombre",
+                y="total_venta_neta",
+                title=f"Ventas Por Meses Desde {self.fecha_inicio} Hasta {self.fecha_fin} para {self.categoria_seleccionada} ",
+            )
+        except Exception as e:
+             yield rx.toast.error(f"{e}", position="top-right")
         if not self.datos:
             self.figura=px.bar()
         
-        df = pd.DataFrame(self.datos)   # <- ahora self.datos ya son dicts
         
-        # Ajusta los nombres de columna según lo que devuelve tu consulta
-        if 'categoria' in df and 'venta_bruta' in df:
-            self.figura = px.bar(
-            df,
-            x="categoria",
-            y="venta_bruta",
-            title="Ventas Bruta Por Categoría",
-        )
         

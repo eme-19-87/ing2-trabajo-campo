@@ -2,7 +2,7 @@ from tiny_reflex.clases.SupabaseViewClient import SupabaseViewClient
 from tiny_reflex.clases.VistaKPIResumen import VistaKPIResumen
 from tiny_reflex.clases.Usuario import Usuario
 import json
-from typing import List
+from typing import List,Dict
 
 class DashboardController:
     def __init__(self):
@@ -15,7 +15,7 @@ class DashboardController:
         return self.__filtros_activos
 
     @filtros_activos.setter
-    def filtros_activos(self, value: str):
+    def filtros_activos(self, value: json):
         self.__filtros_activos = value
         
     @property   
@@ -27,13 +27,14 @@ class DashboardController:
         self.__supabase_view_client = value
         
 
-        
+       
     def aplicar_filtros(self,filtros:json):
-        self.filtros_activos=filtros
+        self.filtros_activos= json.loads(filtros)
 
-    def obtener_datos_metricas(self)->List[VistaKPIResumen]:
+    def obtener_datos_estado_categoria(self)->List[Dict]:
         try:
-            return self.supabase_view_client.consultar_vista_ventas(self.filtros_activos)
+            resultado=self.supabase_view_client.get_ventas_por_categoria_y_mes(self.filtros_activos)
+            return resultado
         except Exception as e:
             raise
         finally:

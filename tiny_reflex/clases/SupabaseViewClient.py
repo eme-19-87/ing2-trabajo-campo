@@ -6,6 +6,7 @@ import os
 from supabase import create_client, Client
 from sqlalchemy import create_engine
 from dotenv import load_dotenv
+from sqlalchemy.exc import DBAPIError
 
 load_dotenv()
 
@@ -41,7 +42,45 @@ class SupabaseViewClient:
     def client_connection(self, value: object):
         self.__client_connection = value
         
-    def consultar_vista_ventas(self,filtros:json) -> list[VistaVentasKPI]:
+    def get_ventas_por_categoria_y_mes(self, filtros: Dict) -> List[Dict]:
+        """
+        Llama a la función SQL get_ventas_por_categoria_y_mes.
+        filtros: dict con claves 'fecha_inicio', 'fecha_fin', 'categoria'
+        """
+        try:
+                # 1. Extraer parámetros
+            fecha_inicio = filtros.get("fecha_inicio").strip()
+            fecha_fin = filtros.get("fecha_fin").strip()
+            categoria_nombre = filtros.get("categoria", "").strip()
+
+        
+
+            # 3. Llamar a la función RPC
+            params = {
+                "p_fecha_inicio": fecha_inicio,
+                "p_fecha_fin": fecha_fin,
+                "p_categoria": categoria_nombre
+            }
+            result = self.client_connection.rpc("get_ventas_por_categoria_y_mes", params).execute()
+            #print(result.data)
+            # 4. Retornar la lista de diccionarios
+            return result.data  # [{"mes_nombre": "Enero", "total_venta_neta": 1234.56}, ...]
+        
+        
+        except DBAPIError as e:
+            # Para errores de base de datos (incluye RAISE EXCEPTION)
+            # El mensaje original suele estar en e.orig.args[0]
+            if e.orig and len(e.orig.args) > 0:
+                error_msg = str(e.orig.args[0])
+            else:
+                error_msg = str(e)
+            raise Exception(error_msg) from e
+    
+        finally:
+            pass
+       
+        
+    def consultar_estado_cat(self,filtros:json) -> list[Dict]:
     
         try:
             #engine = get_engine()
@@ -53,11 +92,10 @@ class SupabaseViewClient:
             
             supabase = self.__client_connection
             query = supabase.table("gold_ventas_interactivas").select(
-                "order_item_id", "producto", "categoria", "ciudad", "estado_pedido",
-                "segmento", "venta_bruta", "venta_neta", "descuento_porcentaje",
-                "descuento_valor", "fecha", "nombre_cliente", "pais", "cantidad"
+                "categoria", "estado_pedido","venta_bruta"
+               
             )
-
+            print(filtros)
             if filtros.get("fecha_inicio"):
                 query = query.gte("fecha", filtros["fecha_inicio"])
             if filtros.get("fecha_fin"):
@@ -66,7 +104,9 @@ class SupabaseViewClient:
                 query = query.eq("categoria", filtros["categoria"])
             if filtros.get("estado") and filtros["estado"].strip():
                 query = query.eq("estado_pedido", filtros["estado"])
-            records = query.data
+            
+            result = query.execute()
+            records = result.data
             
             # Convierte cada diccionario en una instancia de VistaVentasKPI
             # Asumiendo que tu clase acepta los mismos nombres de campos en __init__

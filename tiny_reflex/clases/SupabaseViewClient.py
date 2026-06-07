@@ -78,7 +78,43 @@ class SupabaseViewClient:
     
         finally:
             pass
-       
+    
+    def get_kpi_categoria_y_mes(self, filtros: Dict) -> List[Dict]:
+        """
+        Llama a la función SQL get_ventas_por_categoria_y_mes.
+        filtros: dict con claves 'fecha_inicio', 'fecha_fin', 'categoria'
+        """
+        try:
+                # 1. Extraer parámetros
+            fecha_inicio = filtros.get("fecha_inicio").strip()
+            fecha_fin = filtros.get("fecha_fin").strip()
+            categoria_nombre = filtros.get("categoria", "").strip()
+
+        
+
+            # 3. Llamar a la función RPC
+            params = {
+                "p_fecha_inicio": fecha_inicio,
+                "p_fecha_fin": fecha_fin,
+                "p_categoria": categoria_nombre
+            }
+            result = self.client_connection.rpc("get_kpi_categoria_y_mes", params).execute()
+            #print(result.data)
+            # 4. Retornar la lista de diccionarios
+            return result.data  # [{"mes_nombre": "Enero", "total_venta_neta": 1234.56}, ...]
+        
+        
+        except DBAPIError as e:
+            # Para errores de base de datos (incluye RAISE EXCEPTION)
+            # El mensaje original suele estar en e.orig.args[0]
+            if e.orig and len(e.orig.args) > 0:
+                error_msg = str(e.orig.args[0])
+            else:
+                error_msg = str(e)
+            raise Exception(error_msg) from e
+    
+        finally:
+            pass
         
     def consultar_estado_cat(self,filtros:json) -> list[Dict]:
     

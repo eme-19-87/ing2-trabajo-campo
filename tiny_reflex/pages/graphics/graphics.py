@@ -1,6 +1,8 @@
 import reflex as rx
+import plotly.graph_objects as go
 from tiny_reflex.components.navbar import navbar
 from tiny_reflex.states.DashboardUI import DashboardUI
+
 
 def filtros() -> rx.Component:
     """Componente con los controles de filtro."""
@@ -93,6 +95,22 @@ def grafico_ventas() -> rx.Component:
         ),
         padding="4",
     )
+    
+def grafico_kpi() -> rx.Component:
+    return rx.card(
+        rx.vstack(
+            rx.heading("Estadísticos KPI", size="2"),
+            rx.cond(
+                DashboardUI.cargando_kpi,
+                rx.center(rx.spinner(size="3"), height="300px"),
+                rx.plotly(data=DashboardUI.figura_kpi, use_resize_handler=True)
+            ),
+            spacing="4",
+            width="100%",
+        ),
+        padding="4",
+        margin_top="4",
+    )
 
 
 def dashboard_page() -> rx.Component:
@@ -101,7 +119,9 @@ def dashboard_page() -> rx.Component:
         navbar(),
         rx.vstack(
             filtros(),
-            grafico_ventas(),                     # <-- descomentado
+            rx.hstack(grafico_ventas(),                     # <-- descomentado
+            grafico_kpi()
+            ),
             spacing="4",
             width="100%",
         ),

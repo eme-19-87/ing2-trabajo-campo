@@ -31,9 +31,18 @@ class DashboardController:
     def aplicar_filtros(self,filtros:json):
         self.filtros_activos= json.loads(filtros)
 
-    def obtener_datos_estado_categoria(self)->List[Dict]:
+    def get_ventas_por_categoria_y_mes(self)->List[Dict]:
         try:
             resultado=self.supabase_view_client.get_ventas_por_categoria_y_mes(self.filtros_activos)
+            return resultado
+        except Exception as e:
+            raise
+        finally:
+            pass
+    
+    def get_kpi_por_categoria_y_mes(self)->List[Dict]:
+        try:
+            resultado=self.supabase_view_client.get_kpi_categoria_y_mes(self.filtros_activos)
             return resultado
         except Exception as e:
             raise

@@ -34,28 +34,31 @@ class DashboardController:
     def get_ventas_por_categoria_y_mes(self)->List[Dict]:
         try:
             resultado=self.supabase_view_client.get_ventas_por_categoria_y_mes(self.filtros_activos)
+            if not resultado:  # Verifica si la lista está vacía
+                raise Exception("No hay datos para los criterios de filtro establecidos")
             return resultado
         except Exception as e:
-            raise
+            if hasattr(e, 'message'):
+                raise Exception(e.message) from e
+            else:
+                raise Exception(str(e)) from e
         finally:
             pass
     
     def get_kpi_por_categoria_y_mes(self)->List[Dict]:
         try:
             resultado=self.supabase_view_client.get_kpi_categoria_y_mes(self.filtros_activos)
+            if not resultado:  # Verifica si la lista está vacía
+                raise Exception("No hay datos para los criterios de filtro establecidos")
             return resultado
         except Exception as e:
-            raise
+            if hasattr(e, 'message'):
+                raise Exception(e.message) from e
+            else:
+                raise Exception(str(e)) from e
         finally:
             pass
-        
-    def obtener_estados(self)->List:
-        try:
-            return self.supabase_view_client.obtener_estados()
-        except Exception as e:
-            raise e
-        finally:
-            pass
+   
     
     def obtener_categorias(self)->List:
         try:

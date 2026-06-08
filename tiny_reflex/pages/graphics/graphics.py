@@ -47,20 +47,6 @@ def filtros() -> rx.Component:
                     ),
                     spacing="1",
                 ),
-                rx.vstack(
-                    rx.text("Estado:", font_weight="bold"),
-                    rx.cond(
-                        DashboardUI.cargando_estados,
-                        rx.spinner(),
-                        rx.select(
-                            DashboardUI.estados,
-                            placeholder="Todos",
-                            on_change=DashboardUI.set_estado_seleccionado,      # <-- nuevo
-                            width="200px",
-                        ),
-                    ),
-                    spacing="1",
-                ),
                 rx.button(
                     "Graficar",
                     on_click=DashboardUI.buscar_datos,   # <-- aquí el método
@@ -85,6 +71,7 @@ def grafico_ventas() -> rx.Component:
             rx.cond(
                 DashboardUI.cargando_grafico,
                 rx.center(rx.spinner(size="3"), height="400px"),
+                
                 rx.plotly(
                             data=DashboardUI.figura
                             
@@ -119,17 +106,20 @@ def dashboard_page() -> rx.Component:
         navbar(),
         rx.vstack(
             filtros(),
-            rx.hstack(grafico_ventas(),                     # <-- descomentado
-            grafico_kpi()
+            rx.cond(
+                DashboardUI.datos,
+            grafico_ventas()                    # <-- descomentado
+           
             ),
+            rx.cond(DashboardUI.datos_kpi,
+                    grafico_kpi()),
             spacing="4",
             width="100%",
         ),
         max_width="1200px",
         padding="4",
         on_mount=[
-            DashboardUI.cargar_categorias,
-            DashboardUI.cargar_estados
+            DashboardUI.cargar_categorias
          # carga inicial con filtros vacíos
         ],
     )

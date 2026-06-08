@@ -49,9 +49,9 @@ class SupabaseViewClient:
         """
         try:
                 # 1. Extraer parámetros
-            fecha_inicio = filtros.get("fecha_inicio").strip()
-            fecha_fin = filtros.get("fecha_fin").strip()
-            categoria_nombre = filtros.get("categoria", "").strip()
+            fecha_inicio = filtros.get("fecha_inicio")
+            fecha_fin = filtros.get("fecha_fin")
+            categoria= filtros.get("categoria", "").strip()
 
         
 
@@ -59,7 +59,7 @@ class SupabaseViewClient:
             params = {
                 "p_fecha_inicio": fecha_inicio,
                 "p_fecha_fin": fecha_fin,
-                "p_categoria": categoria_nombre
+                "p_categoria": categoria
             }
             result = self.client_connection.rpc("get_ventas_por_categoria_y_mes", params).execute()
             #print(result.data)
@@ -70,11 +70,16 @@ class SupabaseViewClient:
         except DBAPIError as e:
             # Para errores de base de datos (incluye RAISE EXCEPTION)
             # El mensaje original suele estar en e.orig.args[0]
+            
             if e.orig and len(e.orig.args) > 0:
-                error_msg = str(e.orig.args[0])
+               
+                raw = str(e.orig.args[0])
+                msj_limpio = raw.split('\n')[0]
+                
             else:
-                error_msg = str(e)
-            raise Exception(error_msg) from e
+               
+                msj_limpio = str(e.message)
+            raise Exception(msj_limpio) from e
     
         finally:
             pass
@@ -86,9 +91,9 @@ class SupabaseViewClient:
         """
         try:
                 # 1. Extraer parámetros
-            fecha_inicio = filtros.get("fecha_inicio").strip()
-            fecha_fin = filtros.get("fecha_fin").strip()
-            categoria_nombre = filtros.get("categoria", "").strip()
+            fecha_inicio = filtros.get("fecha_inicio")
+            fecha_fin = filtros.get("fecha_fin")
+            categoria= filtros.get("categoria", "").strip()
 
         
 
@@ -96,7 +101,7 @@ class SupabaseViewClient:
             params = {
                 "p_fecha_inicio": fecha_inicio,
                 "p_fecha_fin": fecha_fin,
-                "p_categoria": categoria_nombre
+                "p_categoria": categoria
             }
             result = self.client_connection.rpc("get_kpi_categoria_y_mes", params).execute()
             #print(result.data)

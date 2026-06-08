@@ -13,16 +13,13 @@ class DashboardUI(rx.State):
     fecha_inicio: str = ""
     fecha_fin: str = ""
     categoria_seleccionada: str = ""
-    estado_seleccionado: str = ""
     
     
     #variables para controlar los estados de la vista (proios de Reflex)
     #los datos que se mostrarán en el desplegable de categorías y estados
     categorias: list[str] = []
-    estados: list[str] = []
     #controla lo que se mostrará o no mientras se están cargando los datos y el gráfico
     cargando_categorias: bool = False
-    cargando_estados: bool = False
     cargando_grafico: bool = False
     cargando_kpi:bool=False
     #el conjunto de datos recuperados para mostrarlos en el gráfico
@@ -36,14 +33,14 @@ class DashboardUI(rx.State):
     @rx.event
     async def buscar_datos(self):
         self.cargando_grafico = True
+        self.cargando_kpi= True
         yield
         
         try:
             filtros = {
-                "fecha_inicio": self.fecha_inicio,
-                "fecha_fin": self.fecha_fin,
-                "categoria": self.categoria_seleccionada,
-                "estado": self.estado_seleccionado,
+                "fecha_inicio": self.fecha_inicio if self.fecha_inicio else None,
+                "fecha_fin": self.fecha_fin if self.fecha_fin else None,
+                "categoria": self.categoria_seleccionada
             }
             dashboard=DashboardController()
             dashboard.aplicar_filtros(json.dumps(filtros))
@@ -55,6 +52,7 @@ class DashboardUI(rx.State):
             
         except Exception as e:
             # Ya no asignamos self.figura, solo mostramos toast si quieres
+            
             yield rx.toast.error(f"{e}", position="top-right")
         finally:
             self.cargando_grafico = False
@@ -73,18 +71,6 @@ class DashboardUI(rx.State):
         finally:
             self.cargando_categorias = False
 
-    @rx.event
-    async def cargar_estados(self):
-        self.cargando_estados = True
-        try:
-            dashboard = DashboardController()
-            func = functools.partial(dashboard.obtener_estados)
-            estados = await rx.run_in_thread(func)
-            self.estados = sorted(estados)
-        except Exception as e:
-             yield rx.toast.error(f"{e}", position="top-right")
-        finally:
-            self.cargando_estados = False
 
     @rx.event
     def set_fecha_inicio(self, valor: str):
@@ -101,11 +87,7 @@ class DashboardUI(rx.State):
    
         self.categoria_seleccionada = valor
 
-    @rx.event
-    def set_region_seleccionada(self, valor: str):
-      
-        self.estado_seleccionado = valor
-
+   
    
     def dibujar_grafico_ventas_por_categoria_y_mes(self):
         try:
@@ -113,6 +95,7 @@ class DashboardUI(rx.State):
                 self.figura = px.bar()  # gráfico vacío
                 return
             df = pd.DataFrame(self.datos)
+            #print(df)
             if 'mes_nombre' in df and 'total_venta_neta' in df:
                 self.figura = px.bar(
                     df,
@@ -122,9 +105,9 @@ class DashboardUI(rx.State):
                 )
             else:
                 self.figura = px.bar()
+            
         except Exception as e:
-            # NO uses yield aquí; solo imprime o muestra toast con un evento (pero no es evento)
-            print(f"Error en dibujar_grafico: {e}")
+
             self.figura = px.bar()
             
         
@@ -166,5 +149,5 @@ class DashboardUI(rx.State):
             )])
             self.figura_kpi.update_layout(title="Estadísticos de venta neta por mes")
         except Exception as e:
-            print(f"Error en dibujar_kpi_categoria_mes: {e}")
+
             self.figura_kpi = go.Figure()

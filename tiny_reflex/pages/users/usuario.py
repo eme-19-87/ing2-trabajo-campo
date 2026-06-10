@@ -157,7 +157,9 @@ def formulario_usuario() -> rx.Component:
         rx.vstack(
             # Título dinámico
             rx.heading(UsuarioState.titulo_formulario, font_size="2em", align="center"),
-
+            rx.cond(UsuarioState.saving_usuario,
+                    rx.hstack(rx.text("Registrando Usuario. Espere Por Favor"),rx.spinner()),
+                    rx.fragment()),
             # Campo: Nombre
             rx.text("Nombre:", font_weight="bold"),
             rx.input(

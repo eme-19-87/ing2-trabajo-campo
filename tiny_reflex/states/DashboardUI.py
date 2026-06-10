@@ -54,6 +54,10 @@ class DashboardUI(rx.State):
             # Ya no asignamos self.figura, solo mostramos toast si quieres
             
             yield rx.toast.error(f"{e}", position="top-right")
+            self.datos=[]
+            self.datos_kpi=[]
+            self.figura= px.line()
+            self.figura_kpi=px.line()
         finally:
             self.cargando_grafico = False
             self.cargando_kpi = False
@@ -67,7 +71,8 @@ class DashboardUI(rx.State):
             categorias = await rx.run_in_thread(func)
             self.categorias = sorted(categorias)
         except Exception as e:
-             yield rx.toast.error(f"{e}", position="top-right")
+            
+            yield rx.toast.error(f"{e}", position="top-right")
         finally:
             self.cargando_categorias = False
 
@@ -128,9 +133,9 @@ class DashboardUI(rx.State):
             self.figura_kpi = go.Figure(data=[go.Table(
                 header=dict(
                     values=["Métrica", "Valor"],
-                    fill_color='paleturquoise',
-                    align='left',
-                    font=dict(size=12)
+                    fill_color='white',
+                    align='center',
+                    font=dict(size=12,color='black')
                 ),
                 cells=dict(
                     values=[
@@ -143,8 +148,9 @@ class DashboardUI(rx.State):
                             f"{kpi.get('desviacion_estandar', 0):,.2f}"
                         ]
                     ],
-                    fill_color='lavender',
-                    align='left'
+                    fill_color='white',
+                    align='center',
+                    font=dict(size=12,color='black')
                 )
             )])
             self.figura_kpi.update_layout(title="Estadísticos de venta neta por mes")

@@ -252,11 +252,12 @@ class UserQueries:
                 # La función retorna '' en éxito, o lanza excepción en caso de error
                 return result.scalar()  # Será '' (vacío)
         except DBAPIError as e:
-            # Extrae el mensaje real de la excepción SQL
-            if e.orig and len(e.orig.args) > 0:
-                error_msg = str(e.orig.args[0])
+            # Obtener solo el mensaje primario (sin CONTEXT, HINT, etc.)
+            if e.orig and hasattr(e.orig, 'diag') and e.orig.diag is not None:
+                error_msg = e.orig.diag.message_primary
+            elif e.orig and len(e.orig.args) > 0:
+                # Fallback: primer argumento (suele ser el mensaje completo)
+                error_msg = str(e.orig.args[0]).split('\nCONTEXT:')[0]  # truncar manualmente
             else:
                 error_msg = str(e)
             raise Exception(error_msg) from e
-        except Exception as e:
-            raise Exception(str(e)) from e

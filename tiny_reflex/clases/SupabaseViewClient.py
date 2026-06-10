@@ -1,7 +1,5 @@
-from tiny_reflex.clases.VistaVentasKPI import VistaVentasKPI
 import json
-from typing import List,Dict, Any
-from sqlalchemy.engine import Engine
+from typing import List,Dict
 import os
 from supabase import create_client, Client
 from sqlalchemy import create_engine
@@ -42,16 +40,17 @@ class SupabaseViewClient:
     def client_connection(self, value: object):
         self.__client_connection = value
         
-    def get_ventas_por_categoria_y_mes(self, filtros: Dict) -> List[Dict]:
+    def get_ventas_por_categoria_y_mes(self, filtros: json) -> List[Dict]:
         """
         Llama a la función SQL get_ventas_por_categoria_y_mes.
         filtros: dict con claves 'fecha_inicio', 'fecha_fin', 'categoria'
         """
         try:
+            filtros_dict=json.loads(filtros)
                 # 1. Extraer parámetros
-            fecha_inicio = filtros.get("fecha_inicio")
-            fecha_fin = filtros.get("fecha_fin")
-            categoria= filtros.get("categoria", "").strip()
+            fecha_inicio = filtros_dict.get("fecha_inicio")
+            fecha_fin = filtros_dict.get("fecha_fin")
+            categoria= filtros_dict.get("categoria", "").strip()
 
         
 
@@ -61,6 +60,7 @@ class SupabaseViewClient:
                 "p_fecha_fin": fecha_fin,
                 "p_categoria": categoria
             }
+            print(params)
             result = self.client_connection.rpc("get_ventas_por_categoria_y_mes", params).execute()
             #print(result.data)
             # 4. Retornar la lista de diccionarios
@@ -84,16 +84,17 @@ class SupabaseViewClient:
         finally:
             pass
     
-    def get_kpi_categoria_y_mes(self, filtros: Dict) -> List[Dict]:
+    def get_kpi_categoria_y_mes(self, filtros: json) -> List[Dict]:
         """
         Llama a la función SQL get_ventas_por_categoria_y_mes.
         filtros: dict con claves 'fecha_inicio', 'fecha_fin', 'categoria'
         """
         try:
+            filtros_dict=json.loads(filtros)
                 # 1. Extraer parámetros
-            fecha_inicio = filtros.get("fecha_inicio")
-            fecha_fin = filtros.get("fecha_fin")
-            categoria= filtros.get("categoria", "").strip()
+            fecha_inicio = filtros_dict.get("fecha_inicio")
+            fecha_fin = filtros_dict.get("fecha_fin")
+            categoria= filtros_dict.get("categoria", "").strip()
 
         
 
@@ -121,103 +122,15 @@ class SupabaseViewClient:
         finally:
             pass
         
-    def consultar_estado_cat(self,filtros:json) -> list[Dict]:
     
-        try:
-            #engine = get_engine()
-            #query = "SELECT * FROM gold_ventas_interactivasLIMIT 1"
-            #df = pd.read_sql(query, engine)
-            #records = df.to_dict("records")
-            #return cast(list[VistaVentasKPI], records)
-            # Consulta: SELECT * FROM gold_ventas_interactivas LIMIT 1
-            
-            supabase = self.__client_connection
-            query = supabase.table("gold_ventas_interactivas").select(
-                "categoria", "estado_pedido","venta_bruta"
-               
-            )
-            print(filtros)
-            if filtros.get("fecha_inicio"):
-                query = query.gte("fecha", filtros["fecha_inicio"])
-            if filtros.get("fecha_fin"):
-                query = query.lte("fecha", filtros["fecha_fin"])
-            if filtros.get("categoria") and filtros["categoria"].strip():
-                query = query.eq("categoria", filtros["categoria"])
-            if filtros.get("estado") and filtros["estado"].strip():
-                query = query.eq("estado_pedido", filtros["estado"])
-            
-            result = query.execute()
-            records = result.data
-            
-            # Convierte cada diccionario en una instancia de VistaVentasKPI
-            # Asumiendo que tu clase acepta los mismos nombres de campos en __init__
-            #instancias = [VistaVentasKPI(**record) for record in records]
-            
-            # Si necesitas el cast (aunque ya es list[VistaVentasKPI] gracias a la comprensión)
-            #return cast(List[VistaVentasKPI], instancias)
-            return records
-        except Exception as e:
-            print(f"Error loading customers: {e}")
-            return []
-
-    def load_sales(self,json: json) -> list[VistaVentasKPI]:
-        """Load customers data from database."""
-        try:
-            #engine = get_engine()
-            #query = "SELECT * FROM gold_ventas_interactivasLIMIT 1"
-            #df = pd.read_sql(query, engine)
-            #records = df.to_dict("records")
-            #return cast(list[VistaVentasKPI], records)
-            # Consulta: SELECT * FROM gold_ventas_interactivas LIMIT 1
-            
-            response = self.client_connection.table("gold_ventas_interactivas").select("*").limit(1).execute()
-            records = response.data
-            
-            instancias = [VistaVentasKPI(**record) for record in records]
-            return instancias
-        except Exception as e:
-            print(f"Error loading customers: {e}")
-            return []
-    
-    def load_calendary(self) -> list[VistaVentasKPI]:
-        """Load customers data from database."""
-        try:
-            #engine = get_engine()
-            #query = "SELECT * FROM gold_ventas_interactivasLIMIT 1"
-            #df = pd.read_sql(query, engine)
-            #records = df.to_dict("records")
-            #return cast(list[VistaVentasKPI], records)
-            # Consulta: SELECT * FROM gold_ventas_interactivas LIMIT 1
-            
-            response = self.client_connection.table("gold_calendario").select("*").limit(1).execute()
-            records = response.data
-            
-            # Convierte cada diccionario en una instancia de VistaVentasKPI
-            # Asumiendo que tu clase acepta los mismos nombres de campos en __init__
-            #instancias = [VistaVentasKPI(**record) for record in records]
-            
-            # Si necesitas el cast (aunque ya es list[VistaVentasKPI] gracias a la comprensión)
-            #return cast(List[VistaVentasKPI], instancias)
-            return records
-        except Exception as e:
-            print(f"Error loading customers: {e}")
-            return []
-        
-    def obtener_estados(self)->List:
-        try:
-          
-            response = self.client_connection.table("gold_ventas_interactivas").select("estado_pedido").execute()
-            estados_unicos = list(set(row["estado_pedido"] for row in response.data))
-            return estados_unicos
-        except Exception as e:
-            raise e
 
     def obtener_categorias(self)->List:
         try:
            
             response = self.client_connection.table("gold_ventas_interactivas").select("categoria").execute()
-            estados_unicos = list(set(row["categoria"] for row in response.data))
-            return estados_unicos
+            categorias_unicas = list(set(row["categoria"] for row in response.data))
+            categorias_unicas.insert(0, "Ninguna")
+            return categorias_unicas
         except Exception as e:
             raise e
         

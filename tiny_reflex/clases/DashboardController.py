@@ -1,5 +1,4 @@
 from tiny_reflex.clases.SupabaseViewClient import SupabaseViewClient
-from tiny_reflex.clases.VistaKPIResumen import VistaKPIResumen
 from tiny_reflex.clases.Usuario import Usuario
 import json
 from typing import List,Dict
@@ -29,10 +28,11 @@ class DashboardController:
 
        
     def aplicar_filtros(self,filtros:json):
-        self.filtros_activos= json.loads(filtros)
+        self.filtros_activos= filtros
 
     def get_ventas_por_categoria_y_mes(self)->List[Dict]:
         try:
+            
             resultado=self.supabase_view_client.get_ventas_por_categoria_y_mes(self.filtros_activos)
             if not resultado:  # Verifica si la lista está vacía
                 raise Exception("No hay datos para los criterios de filtro establecidos")

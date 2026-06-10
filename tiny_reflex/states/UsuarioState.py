@@ -123,42 +123,52 @@ class UsuarioState(rx.State):
     #Métodos para controlar los datos del formulario traidos
     #o insertados en la base de datos
     #--------------------------------------------------------------#
-        
-    def control_format(self):
+    @rx.event
+    async  def control_format(self):
         """Método orquestador que controla el alta del nuevo usuario"""
+        self.saving_usuario=True
+        yield
         try:
+            
             rol=Rol(self.id_rol_seleccionado,self.nombre_rol_seleccionado)
             usuario=Usuario(0,self.nombre,self.apellido,self.dni,self.email,self.password,self.confirmar_password,rol)
             msj=usuario.control_format(self.email,self.dni,self.nombre,self.apellido,self.password,self.confirmar_password)
             
             #si algún campo no cumple el formato, se informa, en caso contrario, el campo msj estará vacío
             if len(msj)>0:
-                return rx.toast.error(msj, position="top-right", duration=None)
-        
+                yield rx.toast.error(msj, position="top-right", duration=None)
+                return
             
             msj= Persona.control_dni(usuario.dni)
             if len(msj)>0:
-                return rx.toast.error(msj, position="top-right", duration=None)
+                yield rx.toast.error(msj, position="top-right", duration=None)
+                return
             msj=Usuario.control_email(self.email)
             if len(msj)>0:
-                return rx.toast.error(msj, position="top-right", duration=None)
+                yield rx.toast.error(msj, position="top-right", duration=None)
+                return
             
-            # Si todos los campos están completos
-            self.saving_usuario=True
-            msj=Usuario.create_user(self.nombre,self.apellido,self.dni,self.email,self.password,self.id_rol_seleccionado)
+            msj = await rx.run_in_thread(
+                Usuario.create_user,
+                self.nombre, self.apellido, self.dni, self.email,
+                self.password, self.id_rol_seleccionado
+            )
+            
             self.cancelar_edicion()
-            return rx.toast.success("Usuario creado correctamente", position="top-right", duration=None)
+            yield rx.toast.success("Usuario creado correctamente", position="top-right", duration=None)
             
             
         except Exception as e:
-            return rx.toast.error(e, position="top-right", duration=None)
+            yield rx.toast.error(e, position="top-right", duration=None)
         finally:
             self.saving_usuario=False
+            yield
             
     @rx.event
     async def control_format_update(self):
         
-
+        self.saving_usuario = True
+        yield
         try:
             # Prepara los datos desde el estado
             id_usuario = self.editando_id
@@ -203,7 +213,8 @@ class UsuarioState(rx.State):
             # Captura cualquier excepción (incluyendo las lanzadas por la función)
             yield rx.toast.error(f"{str(e)}", position="top-right")
         finally:
-            self.saving_usuario = False       
+            self.saving_usuario = False    
+            yield   
         
     @rx.event
     async def cargar_roles(self):

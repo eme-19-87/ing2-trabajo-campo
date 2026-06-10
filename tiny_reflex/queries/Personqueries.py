@@ -27,16 +27,15 @@ class Personaqueries:
                 return exists if len(exists)==0 else exists
                 
         except DBAPIError as e:
-            # Para errores de base de datos (incluye RAISE EXCEPTION)
-            # El mensaje original suele estar en e.orig.args[0]
-            if e.orig and len(e.orig.args) > 0:
-                error_msg = str(e.orig.args[0])
+            # Obtener solo el mensaje primario (sin CONTEXT, HINT, etc.)
+            if e.orig and hasattr(e.orig, 'diag') and e.orig.diag is not None:
+                error_msg = e.orig.diag.message_primary
+            elif e.orig and len(e.orig.args) > 0:
+                # Fallback: primer argumento (suele ser el mensaje completo)
+                error_msg = str(e.orig.args[0]).split('\nCONTEXT:')[0]  # truncar manualmente
             else:
                 error_msg = str(e)
             raise Exception(error_msg) from e
-        except Exception as e:
-            # Otros errores (conexión, etc.)
-            raise Exception(str(e)) from e
         
     @staticmethod
     def control_update_dni(id_usuario:int,dni: str) -> str:
@@ -63,13 +62,12 @@ class Personaqueries:
                 return exists if len(exists)>0 else exists
                 
         except DBAPIError as e:
-            # Para errores de base de datos (incluye RAISE EXCEPTION)
-            # El mensaje original suele estar en e.orig.args[0]
-            if e.orig and len(e.orig.args) > 0:
-                error_msg = str(e.orig.args[0])
+            # Obtener solo el mensaje primario (sin CONTEXT, HINT, etc.)
+            if e.orig and hasattr(e.orig, 'diag') and e.orig.diag is not None:
+                error_msg = e.orig.diag.message_primary
+            elif e.orig and len(e.orig.args) > 0:
+                # Fallback: primer argumento (suele ser el mensaje completo)
+                error_msg = str(e.orig.args[0]).split('\nCONTEXT:')[0]  # truncar manualmente
             else:
                 error_msg = str(e)
             raise Exception(error_msg) from e
-        except Exception as e:
-            # Otros errores (conexión, etc.)
-            raise Exception(str(e)) from e

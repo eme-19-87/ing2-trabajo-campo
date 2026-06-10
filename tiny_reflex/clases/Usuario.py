@@ -135,10 +135,18 @@ class Usuario(Persona):
         return UserQueries.control_update_email(id_usuario,email)
 
   
-    def __control_email_format(self,email: str) -> bool:
+    def __control_email_format(self,email: str) ->str:
         """Valida el formato del email. Retorna True si es válido."""
+      
         patron = r"^[\w\.-]+@[\w\.-]+\.\w+$"
-        return bool(re.match(patron, email))
+        
+        if not email:
+            return "El email no puede estar vacío"
+    
+        if not re.match(patron, email):
+            return "Formato de email inválido"
+          
+        return ""
 
     
     def __control_contra(self,contrasenia: str, repcontra: str) -> str:
@@ -158,12 +166,20 @@ class Usuario(Persona):
     def __control_dni_format(self,dni: str) -> str:
         """Controla el formato del DNI. Retorna string vacío si OK, o error."""
         msj = ""
+        if len(dni)==0:
+            msj+="\n El DNI no puede estar vacío"
+            return msj
+        
         if not dni.isdigit():
             msj += "\n Ingrese sólo números al DNI"
             return msj
+        
         if not (8 <= len(dni) <= 10):
             msj += "\n El dni debe contener entre 8 y 10 dígitos."
+            
+        
         return msj
+        
 
     # Nota: Los métodos control_nombre y control_apellido ya existen en Persona.
     # Se pueden reutilizar desde la clase base.
@@ -196,7 +212,7 @@ class Usuario(Persona):
         msj += self.__control_nombre(nombre)
         msj += self.__control_apellido(apellido)
         msj += self.__control_contra(contrasenia, contrarep)
-        msj += "" if self.__control_email_format(email) else "\n Formato de email inválido."
+        msj += self.__control_email_format(email)
         msj += self.__control_dni_format(dni)
         return msj
 
@@ -216,7 +232,7 @@ class Usuario(Persona):
         msj = ""
         msj += self.__control_nombre(nombre)
         msj += self.__control_apellido(apellido)
-        msj += "" if self.__control_email_format(email) else "\n Formato de email inválido"
+        msj += self.__control_email_format(email)
         msj += self.__control_dni_format(dni)
         return msj
 

@@ -1,7 +1,6 @@
 from sqlalchemy import create_engine
 import os
 
-#postgresql://neondb_owner:npg_x1YWBdvwgI5i@ep-broad-bonus-antehvwp-pooler.c-6.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require
 
 def get_engine():
     """
@@ -10,7 +9,7 @@ def get_engine():
     """
 
     user = os.getenv("POSTGRES_USER", "neondb_owner")
-    password = os.getenv("POSTGRES_PASSWORD", "npg_x1YWBdvwgI5i")
+    password = os.getenv("POSTGRES_PASSWORD", "")
     host = os.getenv("POSTGRES_HOST", "ep-broad-bonus-antehvwp-pooler.c-6.us-east-1.aws.neon.tech")
     port = os.getenv("POSTGRES_PORT", "5432")
     database = os.getenv("POSTGRES_DB", "neondb")

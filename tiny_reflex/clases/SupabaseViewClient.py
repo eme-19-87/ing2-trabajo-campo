@@ -46,11 +46,14 @@ class SupabaseViewClient:
         filtros: dict con claves 'fecha_inicio', 'fecha_fin', 'categoria'
         """
         try:
-            filtros_dict=json.loads(filtros)
+            try:
+                filtros_dict = json.loads(filtros)
+            except json.JSONDecodeError as e:
+                raise Exception(f"El filtro no es un JSON válido: {e}") from e
                 # 1. Extraer parámetros
             fecha_inicio = filtros_dict.get("fecha_inicio")
             fecha_fin = filtros_dict.get("fecha_fin")
-            categoria= filtros_dict.get("categoria", "").strip()
+            categoria= filtros_dict.get("categoria", "")
 
         
 
@@ -84,43 +87,35 @@ class SupabaseViewClient:
         finally:
             pass
     
-    def get_kpi_categoria_y_mes(self, filtros: json) -> List[Dict]:
+    def get_kpi_categoria_y_mes(self, filtros: str) -> List[Dict]:
         """
         Llama a la función SQL get_ventas_por_categoria_y_mes.
-        filtros: dict con claves 'fecha_inicio', 'fecha_fin', 'categoria'
+        filtros: string JSON con claves 'fecha_inicio', 'fecha_fin', 'categoria'
         """
         try:
-            filtros_dict=json.loads(filtros)
-                # 1. Extraer parámetros
+            filtros_dict = json.loads(filtros)
+        except json.JSONDecodeError as e:
+            raise Exception(f"El filtro no es un JSON válido: {e}") from e
+
+        try:
             fecha_inicio = filtros_dict.get("fecha_inicio")
             fecha_fin = filtros_dict.get("fecha_fin")
-            categoria= filtros_dict.get("categoria", "").strip()
+            categoria = filtros_dict.get("categoria", "")
 
-        
-
-            # 3. Llamar a la función RPC
             params = {
                 "p_fecha_inicio": fecha_inicio,
                 "p_fecha_fin": fecha_fin,
                 "p_categoria": categoria
             }
             result = self.client_connection.rpc("get_kpi_categoria_y_mes", params).execute()
-            #print(result.data)
-            # 4. Retornar la lista de diccionarios
-            return result.data  # [{"mes_nombre": "Enero", "total_venta_neta": 1234.56}, ...]
-        
-        
+            return result.data
+
         except DBAPIError as e:
-            # Para errores de base de datos (incluye RAISE EXCEPTION)
-            # El mensaje original suele estar en e.orig.args[0]
             if e.orig and len(e.orig.args) > 0:
                 error_msg = str(e.orig.args[0])
             else:
                 error_msg = str(e)
             raise Exception(error_msg) from e
-    
-        finally:
-            pass
         
     
 
